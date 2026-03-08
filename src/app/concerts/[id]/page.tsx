@@ -7,6 +7,7 @@ import { getConcertById } from "@/lib/setlistfm";
 import type { Setlist } from "@/types/setlistfm";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ReviewFormContainer } from "@/components/review-form-container";
 
 interface ConcertPageState {
   concert: Setlist | null;
@@ -231,6 +232,8 @@ export default function ConcertDetailPage() {
             )}
           </CardContent>
         </Card>
+
+        <ReviewFormContainer concertId={concertId} />
 
         <div className="text-center">
           <a
