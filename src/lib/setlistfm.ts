@@ -15,6 +15,8 @@ const BASE_URL = "https://api.setlist.fm/rest/1.0";
 function getAuthHeaders(): HeadersInit {
   const apiKey = process.env.SETLIST_FM_API_KEY;
 
+  console.log("SETLIST_FM_API_KEY exists:", !!apiKey);
+
   if (!apiKey) {
     throw new Error("SETLIST_FM_API_KEY environment variable is not set");
   }
