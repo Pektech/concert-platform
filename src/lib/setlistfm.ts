@@ -67,7 +67,7 @@ async function handleRequest<T>(
 export async function searchArtists(
   query: string,
 ): Promise<SetlistFMAPIResult<ArtistSearchResult>> {
-  const url = `${BASE_URL}/search/artists?query=${encodeURIComponent(query)}`;
+  const url = `${BASE_URL}/search/artists?artistName=${encodeURIComponent(query)}`;
   return handleRequest<ArtistSearchResult>(url);
 }
 
