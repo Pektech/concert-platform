@@ -1,377 +1,251 @@
-### Wave 1, Task 10: Logout + Auth UI Components
+## Task 14: Artist Display Components
 
-#### Logout Implementation
-- Used NextAuth v5's `signOut` function exported from `src/lib/auth.ts`
-- No separate logout server action needed - `signOut` handles session destruction
-- Redirect to home page configured via `callbackUrl: "/"` option
+### Components Created
 
-#### Components Created
-1. `src/components/user-nav.tsx` - User navigation component with:
-   - `useSession` hook to check authentication state
-   - Loading state handling (returns null while session loads)
-   - Conditional rendering:
-     - Logged out: "Sign In" button linking to `/login`
-     - Logged in: User name/email display + "Logout" button
-   - Logout button triggers `signOut({ callbackUrl: "/" })` for clean session cleanup
+#### ArtistCard Component (`src/components/artist-card.tsx`)
+Displays individual artist information with:
+- Artist name as clickable link to artist page (`/artists/${mbid}`)
+- Optional image display with graceful fallback
+- Disambiguation text (when available)
+- Hover effects: ring highlight and image scale animation
+- Uses shadcn/ui Card component with size prop support
 
-#### Layout Changes
-Modified `src/app/layout.tsx` to include:
-- `SessionProvider` wrapper from next-auth/react (required for useSession hook)
-- Header section with UserNav component positioned at top-right
-- Flex layout structure: header + main content area
-
-#### Build Fixes Required
-- Removed unused `getServerSession` import from `src/lib/auth.ts` (not available in NextAuth v5)
-- Fixed Zod v4 breaking change in `src/actions/login.ts`:
-  - Changed `parsed.error.errors` to `parsed.error.issues`
-  - Zod v4 renamed the `errors` array to `issues`
-
-#### Dependencies Used
-- `next-auth/react` - `useSession` hook and `signOut` function
-- `@base-ui/react/button` - Button component (via shadcn)
-- No new packages required
-
-#### Files Created/Modified
-- Created: `src/components/user-nav.tsx`
-- Modified: `src/app/layout.tsx` (SessionProvider wrapper + header)
-- Modified: `src/lib/auth.ts` (removed unused getServerSession)
-- Modified: `src/actions/login.ts` (fixed Zod v4 compatibility)
-
-#### Verification
-- `npm run build` completes successfully
-- TypeScript compiles without errors
-- Static pages: `/`, `/_not-found`
-- Dynamic route: `/api/auth/[...nextauth]`
-
-#### Key Patterns
-- Client-side session management with `useSession` hook
-- SessionProvider must wrap entire app for useSession to work
-- Logout flow: `signOut({ callbackUrl: "/" })` destroys session and redirects
-- Auth state display shows user.name with fallback to user.email
-- No logout confirmation dialog (MVP simplicity)
-
-#### Gotchas
-- NextAuth v5 `signOut` is different from v4 - uses async function with options object
-- `useSession` requires SessionProvider in parent component tree
-- Zod v4 uses `.issues` instead of `.errors` for validation errors
-- Session loading state should be handled to prevent flicker
-
-## Task 8: Login Flow Implementation
-
-### Pattern: NextAuth Credentials Login with Server Action
-
-**Server Action Pattern** (`src/actions/login.ts`):
-- Use `signIn("credentials", ...)` from NextAuth configuration
-- Validate input with Zod schema before passing to signIn
-- Catch `AuthError` to handle invalid credentials gracefully
-- Return error object for form display rather than throwing
-
+**Image Handling Pattern**:
 ```typescript
-try {
-  await signIn("credentials", { email, password, redirectTo: "/" })
-  return { success: true }
-} catch (error) {
-  if (error instanceof AuthError) {
-    return { error: "Invalid credentials" }
-  }
+const hasImage = artist.imageUrl && artist.imageUrl.trim() !== "";
+
+{hasImage ? (
+  <Image src={artist.imageUrl} alt={artist.name} fill className="object-cover" />
+) : (
+  <div className="flex items-center justify-center">
+    <svg>...</svg> {/* Music note icon fallback */}
+  </div>
+)}
+```
+
+**Key Features**:
+- Uses Next.js `Image` component for optimized image loading
+- Fallback SVG icon when `imageUrl` is null or empty
+- `line-clamp-2` on artist name for consistent card heights
+- Group hover states for interactive feedback
+- Smooth transition on image scale (300ms)
+
+#### ArtistList Component (`src/components/artist-list.tsx`)
+Renders grid of multiple artists:
+- Responsive grid: 2 columns (mobile) → 3 (sm) → 4 (md) → 5 (lg)
+- Empty state handling with centered message
+- Passes through size and className props
+- Maps over Artist array with mbid as key
+
+**Grid Pattern**:
+```typescript
+<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+  {artists.map((artist) => (
+    <ArtistCard key={artist.mbid} artist={artist} size={size} />
+  ))}
+</div>
+```
+
+### TypeScript Integration
+Both components use the `Artist` type from `src/types/setlistfm.ts`:
+```typescript
+import type { Artist } from "@/types/setlistfm";
+
+interface ArtistCardProps {
+  artist: Artist;
+  size?: "default" | "sm";
 }
 ```
 
-**Form Component Pattern** (`src/components/login-form.tsx`):
-- Use react-hook-form with zodResolver for client-side validation
-- Submit via FormData to server action (compatible with progressive enhancement)
-- Handle errors in component state and display in error banner
-- Call `router.refresh()` + `router.push("/")` on success
-
-**Auth Configuration** (`src/lib/auth.ts`):
-- Credentials provider already configured with bcrypt password verification
-- Prisma adapter handles session storage
-- JWT session strategy configured
-- `pages.signIn: "/login"` routes unauthenticated users
-
-### Key Learnings
-
-1. **signIn() behavior**: When using `redirectTo`, NextAuth handles the redirect automatically on success. But for better error handling, catch the error and return it to the form.
-
-2. **Error handling**: NextAuth throws `AuthError` on authentication failure - catch this specifically to distinguish from other errors.
-
-3. **Form submission**: Using FormData with server action allows both JavaScript and no-JS scenarios.
-
 ### Files Created
-- `src/actions/login.ts` - Login server action with validation
-- `src/components/login-form.tsx` - Login form with react-hook-form
-- `src/app/login/page.tsx` - Login page layout
-
-### Wave 2, Task 9: Session Management + Protected Routes
-
-#### getServerSession Helper (NextAuth v5 Pattern)
-In NextAuth.js v5 (beta), the `auth` function returned from `NextAuth()` serves as the session getter for server components:
-```typescript
-export { auth as getServerSession }
-```
-- No need to import `getServerSession` from next-auth package (it doesn't exist in v5)
-- The `auth` function automatically reads session from request context
-- Use in Server Components and Server Actions to check authentication
-
-#### useSession Hook Wrapper for Client Components
-Created custom hook wrapper in `src/components/auth-provider.tsx`:
-- `AuthProvider` component wraps `SessionProvider` from next-auth/react
-- `useSession` hook provides session data with loading state handling
-- Optional `redirectToLogin` parameter for automatic redirects
-- Returns: `session`, `status`, `isLoading`, `isAuthenticated`, `isUnauthenticated`, `update`
-
-#### Protected Route Middleware
-Created `src/middleware.ts` with Next.js Edge Middleware:
-- Runs on every request before rendering
-- Checks session using `await auth()`
-- Redirects unauthenticated users to `/login` with callbackUrl
-- Redirects authenticated users away from login/signup pages to home
-- Matcher excludes: `/api`, `/_next/static`, `/_next/image`, static files
-
-#### Server Component Protection Helper
-Created `src/lib/require-auth.ts`:
-- `requireAuth()` function for use in Server Components
-- Calls `getServerSession()` and redirects if no session
-- Accepts optional `callbackUrl` parameter for redirect after login
-- Returns session if authenticated
-
-#### Loading State Component
-Created `src/components/protected-route.tsx`:
-- Client component for wrapping protected client-side routes
-- Uses `useSession` hook with `redirectToLogin` option
-- Shows loading spinner during session check
-- Prevents flash of protected content
-
-#### Layout Integration
-Updated `src/app/layout.tsx`:
-- Wrapped app with custom `AuthProvider` component
-- Provides session context to all client components
-- Enables `useSession` hook usage throughout the app
-
-#### Key Insights
-- NextAuth v5 uses `auth` function instead of separate `getServerSession`
-- Middleware provides route-level protection automatically
-- Server components need explicit `requireAuth()` calls for protection
-- Client components need `ProtectedRoute` wrapper for loading states
-- Always pass `callbackUrl` to preserve user's intended destination after login
-
-#### Files Created
-- `src/lib/auth.ts` - Added `getServerSession` export
-- `src/components/auth-provider.tsx` - Session provider and useSession hook
-- `src/middleware.ts` - Protected route middleware
-- `src/lib/require-auth.ts` - Server component protection helper
-- `src/components/protected-route.tsx` - Client-side loading state wrapper
-- `src/app/layout.tsx` - Updated to use AuthProvider
-
-#### Build Verification
-- `npm run build` completes successfully
-- TypeScript compiles without errors
-- Static pages: `/`, `/login`, `/_not-found`
-- Dynamic route: `/api/auth/[...nextauth]`
-
-## Task 7: Sign Up Flow Implementation
-
-### Server Action Pattern for User Registration
-
-Created `src/actions/signup.ts` following the same pattern as login:
-- "use server" directive for server action
-- Zod schema validation on server-side
-- FormData input for progressive enhancement
-- bcrypt password hashing before storage
-- Duplicate email check with Prisma `findUnique`
-- Returns `{ error: string }` or `{ success: true }`
-
-```typescript
-const signupSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-})
-```
-
-### Form Component Pattern
-
-Created `src/components/signup-form.tsx`:
-- Uses react-hook-form with zodResolver for client-side validation
-- Three fields: name, email, password
-- Error banner displays server-side errors (duplicate email, etc.)
-- Loading state on submit button
-- Redirects to `/login` on success (MVP pattern - no auto-login)
-- Link to login page for existing users
-
-### Key Implementation Details
-
-1. **Password Hashing**: Used `bcrypt.hash(password, 10)` with 10 salt rounds before storing in database
-
-2. **Duplicate Email Handling**: Check with `prisma.user.findUnique({ where: { email } })` before creating user
-
-3. **Validation Consistency**: Same Zod schema used in both:
-   - Client-side (form component) for instant feedback
-   - Server-side (server action) for security
-
-4. **Redirect Pattern**: On success, `router.push("/login")` - forces user to log in with new credentials (MVP simplicity, avoids session edge cases)
-
-### Files Created
-- `src/actions/signup.ts` - Signup server action with password hashing
-- `src/components/signup-form.tsx` - Signup form with validation
-- `src/app/signup/page.tsx` - Signup page layout
+- `src/components/artist-card.tsx` - Individual artist display card
+- `src/components/artist-list.tsx` - Grid layout for multiple artists
 
 ### Verification
 - `npm run build` completes successfully
-- TypeScript compiles without errors
-- Static pages: `/`, `/login`, `/signup`, `/_not-found`
-- Dynamic route: `/api/auth/[...nextauth]`
-
-### Gotchas
-- bcrypt is already installed for login flow - no new dependencies needed
-- Password minimum length (8 chars) must match between signup form and auth config
-- Name field required for signup but optional in database (nullable String)
-
-## Task 11: Setlist.fm API Client + Types
-
-### TypeScript Types Created
-Created comprehensive TypeScript types for Setlist.fm API responses:
-- `Artist` - Artist information with MBID, name, sort name, image
-- `Venue` - Venue details with city, country, coordinates
-- `Concert` - Concert/setlist with date, venue, artist, tour info
-- `Setlist` - Full setlist with sets and songs
-- `SetlistFMAPIResult<T>` - Discriminated union for success/error responses
-
-### API Client Implementation
-Created `src/lib/setlistfm.ts` with:
-- Base URL: `https://api.setlist.fm/rest/1.0`
-- Auth header: `x-api-key` from `SETLIST_FM_API_KEY` environment variable
-- Centralized error handling with `handleRequest` helper function
-- Three exported functions:
-  1. `searchArtists(query: string)` - Search artists by name
-  2. `searchConcerts(artistMbid: string)` - Get concerts by artist MBID
-  3. `getConcertById(id: string)` - Get specific setlist by ID
-
-### Error Handling Pattern
-All API functions return `SetlistFMAPIResult<T>` discriminated union:
-```typescript
-// Success case
-{ success: true; data: T }
-
-// Error case
-{ success: false; error: string; code?: number }
-```
-
-This pattern allows callers to check `result.success` and handle errors gracefully without try/catch.
-
-### TypeScript Gotcha
-Discriminated unions in TypeScript require `type` keyword (not `interface`) when using union syntax:
-```typescript
-// WRONG - interface doesn't support union
-export interface Result<T> { success: true; data: T } | { success: false; error: string }
-
-// CORRECT - type alias with union
-export type Result<T> = { success: true; data: T } | { success: false; error: string }
-```
-
-### Files Created
-- `src/types/setlistfm.ts` - TypeScript type definitions
-- `src/lib/setlistfm.ts` - API client module
-
-### Verification
-- `npm run build` completes successfully
-- TypeScript compiles without errors
-- API key validation throws error if `SETLIST_FM_API_KEY` not set
-
-### API Rate Limiting Note
-Setlist.fm API has rate limits (not implemented yet - future task):
-- Free tier: Limited requests per minute
-- Consider implementing caching layer (next task)
-
-## Task 12: Concert Search API Route + Caching
-
-### API Route Implementation
-
-Created `src/app/api/concerts/search/route.ts` with:
-
-**Query Parameters**:
-- `artist` (required): Artist name to search for
-- `venue` (optional): Venue filter (accepted but not yet implemented)
-- `page` (optional): Page number for pagination (default: 1)
-
-**Caching Strategy**:
-- Used `unstable_cache` from `next/cache` with tagged revalidation
-- Cache revalidation: 1 hour (3600 seconds)
-- Cache tags: `["concerts"]` for manual invalidation
-- Two cached functions:
-  - `searchArtistsCached(query: string)` - caches artist search results
-  - `searchConcertsCached(artistMbid: string)` - caches concert search by artist MBID
-
-**Pagination**:
-- 10 concerts per page (PER_PAGE constant)
-- Response includes pagination metadata: page, perPage, total, pages
-- Slices array results based on page number
-
-**Response Format**:
-```json
-{
-  "concerts": [...],
-  "pagination": {
-    "page": 1,
-    "perPage": 10,
-    "total": 50,
-    "pages": 5
-  }
-}
-```
-
-**Error Handling**:
-- 400: Missing `artist` parameter
-- 400: Invalid `page` parameter (non-integer or < 1)
-- 500: API errors from Setlist.fm
-- 500: Unexpected errors (catch block)
-
-### Pattern: unstable_cache with Tagged Revalidation
-
-```typescript
-const cachedFn = unstable_cache(
-  async (param: string) => {
-    const result = await externalApi(param);
-    return result;
-  },
-  ["cache-key"],
-  { revalidate: 3600, tags: ["concerts"] }
-);
-```
-
-Key points:
-- First argument: function to cache
-- Second argument: unique cache key (array of strings)
-- Third argument: options object with `revalidate` (seconds) and `tags` (array)
-- Tags enable manual cache invalidation via `revalidateTag("concerts")`
-
-### Type Fix
-
-`unstable_cache` expects mutable array for tags, not readonly:
-```typescript
-// WRONG - causes type error
-const CACHE_TAGS = ["concerts"] as const;
-
-// CORRECT
-const CACHE_TAGS = ["concerts"];
-```
-
-### Files Created
-- `src/app/api/concerts/search/route.ts` - API route handler
-
-### Verification
-- `npm run build` completes successfully
-- TypeScript compiles without errors
-- Route registered as dynamic (ƒ) in build output
+- No TypeScript errors in artist components
+- Pre-existing errors unrelated (test types, Skeleton component)
 
 ### Key Patterns
-- Search flow: artist name → search artists → get first match → search concerts by MBID
-- Caching applied at function level, not route level (fine-grained control)
-- Empty results return valid pagination structure with zero counts
-- Error messages include context for debugging
+- Graceful image fallback prevents broken image icons
+- Card-based design matches existing shadcn/ui patterns
+- Responsive grid adapts to screen size automatically
+- Empty state provides user feedback when no artists exist
+- Uses mbid as stable unique key for React lists
+- Hover states provide affordance for clickable cards
 
 ### Gotchas
-- `unstable_cache` tags must be mutable arrays (no `as const`)
-- Setlist.fm API requires two-step search: artist name → MBID → concerts
-- API key must be set in `SETLIST_FM_API_KEY` environment variable
-- Venue parameter accepted but not yet implemented (future enhancement)
+- Artist image URLs from Setlist.fm can be null - always check before using
+- Empty string images should also trigger fallback (trim check)
+- Card component's size prop affects padding and gap spacing
+- Next.js Image component requires sizes prop for responsive images
+
+## Task 15: Venue Display Components
+
+### Components Created
+
+#### VenueCard Component (`src/components/venue-card.tsx`)
+Displays venue information with:
+- Venue name as card title
+- City and country as description text
+- Optional link to venue details page
+- Graceful handling of missing venue data
+- Uses shadcn/ui Card component
+
+**Null Safety Pattern**:
+```typescript
+export function VenueCard({ venue }: VenueCardProps) {
+  if (!venue) {
+    return null;
+  }
+
+  const cityName = city?.name ?? "Unknown City";
+  const countryName = city?.country?.name ?? "";
+  const countryCode = city?.country?.code ?? "";
+}
+```
+
+**Key Features**:
+- Returns null for null/undefined venue (parent handles empty state)
+- Optional chaining (`?.`) for nested city/country properties
+- Fallback text for missing city name
+- Country displayed with comma separator and code in parentheses
+- External link opens in new tab with `rel="noopener noreferrer"`
+
+### TypeScript Integration
+Uses the `Venue` type from `src/types/setlistfm.ts`:
+```typescript
+interface Venue {
+  mbid: string | null;
+  name: string;
+  url: string | null;
+  city: {
+    name: string;
+    country: {
+      code: string;
+      name: string;
+    };
+  };
+  lat: number | null;
+  lng: number | null;
+}
+```
+
+### Files Created
+- `src/components/venue-card.tsx` - Individual venue display card
+- `src/components/ui/skeleton.tsx` - Loading skeleton component (required by concert page)
+
+### Verification
+- `npm run build` completes successfully
+- No TypeScript errors in venue components
+
+### Key Patterns
+- Early return for null/undefined props keeps component simple
+- Optional chaining prevents runtime errors on nested properties
+- Consistent Card-based design matches artist components
+- External links use security best practices (noopener noreferrer)
+
+### Gotchas
+- Venue.city can be undefined in some API responses - use optional chaining
+- Venue.url may be null - only render link when url exists
+- Pre-existing TypeScript error in artist-card.tsx: imageUrl type mismatch (fixed)
+- Missing skeleton component caused build failure (created it)
+
+## Task 13: Concert Detail Page + Data Fetching
+
+### Page Created
+
+#### Concert Detail Page (`src/app/concerts/[id]/page.tsx`)
+Dynamic route page that displays individual concert information:
+- Fetches concert data using `getConcertById` from setlist.fm API client
+- Displays concert date, venue, artists, and full setlist
+- Loading state with skeleton screens
+- 404 state for invalid concert IDs
+- Error state for API failures
+- Responsive layout with gradient background
+
+**Data Fetching Pattern** (Client-side with useEffect):
+```typescript
+const [state, setState] = useState<ConcertPageState>({
+  concert: null,
+  loading: true,
+  error: null,
+  notFound: false,
+});
+
+useEffect(() => {
+  async function fetchConcert() {
+    const result = await getConcertById(concertId);
+    
+    if (result.success) {
+      setState({ concert: result.data, loading: false, error: null, notFound: false });
+    } else {
+      setState({ concert: null, loading: false, error: result.error, notFound: result.code === 404 });
+    }
+  }
+  fetchConcert();
+}, [concertId]);
+```
+
+**State Management Pattern**:
+Uses a single state object for related concert page state:
+```typescript
+interface ConcertPageState {
+  concert: Setlist | null;
+  loading: boolean;
+  error: string | null;
+  notFound: boolean;
+}
+```
+
+### Design Choices
+
+**Visual Theme**: Dark gradient background (slate-900 → purple-900 → slate-900) with:
+- Glassmorphism cards (white/5 background, white/10 border, backdrop-blur)
+- Purple-to-pink gradient accents for interactive elements
+- Emoji icons for visual hierarchy (📅, 📍, 🏙️, 🎸, 🎪, 🎭)
+- Numbered setlist items with gradient badge backgrounds
+
+**Layout Structure**:
+1. Back navigation link
+2. Header card: Artist name, tour, image, date, venue, location
+3. Setlist card: Organized by sets/encores with numbered songs
+4. External link button to setlist.fm
+
+**Setlist Display Pattern**:
+```typescript
+{concert.sets.set.map((set, setIndex) => (
+  <div key={setIndex}>
+    {set.encore && <span>Encore {set.encore}</span>}
+    {!set.encore && setIndex === 0 && <span>Main Set</span>}
+    <ol>
+      {set.song.map((song, songIndex) => (
+        <li>{song.name}</li>
+      ))}
+    </ol>
+  </div>
+))}
+```
+
+### Files Created
+- `src/app/concerts/[id]/page.tsx` - Concert detail page with dynamic routing
+
+### Verification
+- `npm run build` completes successfully
+- Page compiles without TypeScript errors
+- Dynamic route recognized by Next.js (ƒ /concerts/[id])
+
+### Key Patterns
+- Single state object for related page state (loading, error, notFound, data)
+- Separate skeleton component for loading state (cleaner code organization)
+- Conditional rendering based on state flags (loading → notFound → error → success)
+- Date formatting using `toLocaleDateString` for user-friendly display
+- Setlist organized by sets with encore detection
+
+### Gotchas
+- Dynamic route folder must be named `[id]` (with brackets) for Next.js routing
+- Client-side data fetching requires `"use client"` directive
+- `useParams()` hook returns params as object - extract ID with `params.id as string`
+- Setlist.fm API returns 404 for invalid IDs - check `result.code === 404` for not found state
+- Concert.sets.set can be empty array - handle with conditional rendering
+- Artist imageUrl can be null - only render image when it exists
