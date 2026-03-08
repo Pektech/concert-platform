@@ -959,3 +959,576 @@ Review model already had required fields:
 - `userId: String` (relation)
 - `concertId: String` (relation)
 
+
+## Task 22: User Profile Page (Public)
+
+### Page Created
+
+#### User Profile Page (`src/app/profile/[id]/page.tsx`)
+Dynamic route page displaying public user profile information:
+
+**Features**:
+- User avatar with gradient background and first letter initial
+- Display name (or "Anonymous User" if name is null)
+- User role badge (e.g., "user", "admin")
+- Member since date (formatted as "Month Year")
+- Statistics: Review count, Attended count, Tracked concerts count
+- Detailed statistics section with icons and descriptions
+- Empty state when user has no activity
+- Back navigation link to home
+
+**Data Fetching Pattern** (Server Component):
+```typescript
+export default async function UserProfilePage({ params }: UserProfilePageProps) {
+  const { id } = await params;
+  
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      reviews: { select: { id: true, attended: true } },
+      concerts: { select: { id: true } },
+    },
+  });
+
+  if (!user) {
+    notFound();
+  }
+
+  const reviewCount = user.reviews.length;
+  const attendedCount = user.reviews.filter((r) => r.attended).length;
+  const concertsCount = user.concerts.length;
+}
+```
+
+**Count Calculation Pattern**:
+```typescript
+// Reviews: total count of reviews array
+const reviewCount = user.reviews.length;
+
+// Attended: filter reviews by attended boolean
+const attendedCount = user.reviews.filter((r) => r.attended).length;
+
+// Concerts: count from concerts relation
+const concertsCount = user.concerts.length;
+```
+
+**Avatar Pattern**:
+```typescript
+<div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-3xl font-bold">
+  {user.name?.charAt(0).toUpperCase() ?? user.email.charAt(0).toUpperCase()}
+</div>
+```
+
+### Design Choices
+
+**Visual Theme**: Matches existing concert pages:
+- Dark gradient background (slate-900 → purple-900 → slate-900)
+- Glassmorphism cards (white/5 background, white/10 border, backdrop-blur-xl)
+- Purple-to-pink gradient for avatar and accents
+- Emoji icons for statistics (🎵 Reviews, 🎫 Attended, 🎸 Concerts)
+- Badge component for role display with purple variant
+
+**Layout Structure**:
+1. Back navigation link
+2. Profile card: Avatar, name, role badge, join date, quick stats
+3. Statistics card: Detailed breakdown of activity
+4. Empty state card (conditional): When no reviews or concerts
+
+**Empty State Pattern**:
+```typescript
+{reviewCount === 0 && concertsCount === 0 && (
+  <Card>
+    <CardContent className="pt-6 text-center">
+      <div className="text-6xl mb-4">🎭</div>
+      <h3 className="text-xl font-bold text-white mb-2">No Activity Yet</h3>
+      <p className="text-gray-400 mb-6">
+        This user hasn&apos;t reviewed any concerts or added any to their profile yet.
+      </p>
+      <Link href="/">
+        Explore Concerts
+      </Link>
+    </CardContent>
+  </Card>
+)}
+```
+
+### Static Generation
+
+**generateStaticParams Function**:
+```typescript
+export async function generateStaticParams() {
+  const users = await prisma.user.findMany({
+    select: { id: true },
+  });
+
+  return users.map((user) => ({
+    id: user.id,
+  }));
+}
+```
+
+This enables Next.js to pre-generate profile pages for all existing users at build time.
+
+### Files Created
+- `src/app/profile/[id]/page.tsx` - User profile page with dynamic routing
+
+### Files Fixed (Pre-existing Issues)
+- `src/app/api/concerts/[id]/attended/route.ts` - Fixed Next.js 16 params type (Promise)
+- `src/app/reviews/page.tsx` - Fixed auth import (use local auth.ts)
+- `src/components/concert-reviews-list.tsx` - Fixed null check on result.data
+- `src/app/concerts/[id]/page.tsx` - Fixed state interface (added reviews/reviewsLoading)
+
+### Verification
+- `npm run build` completes successfully
+- Dynamic route recognized: ƒ /profile/[id]
+- No TypeScript errors
+- Page is public (no auth required to view)
+
+### Key Patterns
+- Server Component fetches all data (no client-side fetching needed)
+- `notFound()` from next/navigation for 404 handling
+- Optional chaining for safe null access (`user.name?.charAt(0)`)
+- Nullish coalescing for fallback values (`??`)
+- Filter arrays for conditional counts
+- Avatar gradient with first letter fallback
+- Empty state with call-to-action
+- Static params generation for build-time optimization
+
+### Gotchas
+- Next.js 16 requires `params` to be a Promise in dynamic routes: `Promise<{ id: string }>`
+- Profile page is public - no authentication check to view other users
+- User.name can be null - always provide fallback to email initial
+- Empty reviews array is valid - handle gracefully with count of 0
+- `notFound()` must be called in async server component
+- Avatar initial uses `charAt(0).toUpperCase()` for consistent display
+- Badge variant "outline" with custom purple colors for role display
+
+### Design Details
+
+**Stat Card Component** (Internal):
+```typescript
+function StatCard({ icon, label, value, delay }: { 
+  icon: string; 
+  label: string; 
+  value: number; 
+  delay: number 
+}) {
+  return (
+    <div 
+      className="text-center p-4 rounded-lg bg-white/5 hover:bg-white/10"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className="text-4xl mb-2">{icon}</div>
+      <div className="text-3xl font-bold text-white mb-1">{value}</div>
+      <div className="text-gray-400 text-sm">{label}</div>
+    </div>
+  );
+}
+```
+
+**Profile Skeleton** (For future loading states):
+- Included for consistency with other detail pages
+- Can be used if client-side interactivity is added later
+
+
+## Task 24: Browse/Recent Reviews Page
+
+### Page Created
+
+#### Browse Reviews Page (`src/app/reviews/page.tsx`)
+A global browse page showing recent reviews from all users with:
+
+**Key Features**:
+- Paginated display (20 reviews per page)
+- Review cards showing: user avatar, name, rating, concert info, date, text preview
+- Links to user profiles, concert pages, and full reviews
+- Attended badge for reviews marked as attended
+- Setlist highlights preview when available
+- Beautiful dark theme with purple/pink gradient aesthetic matching app design
+
+**Pagination Pattern**:
+```typescript
+const REVIEWS_PER_PAGE = 20;
+
+async function getReviews(page: number) {
+  const skip = (page - 1) * REVIEWS_PER_PAGE;
+  
+  const [reviews, totalReviews] = await Promise.all([
+    prisma.review.findMany({
+      skip,
+      take: REVIEWS_PER_PAGE,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { id, name, email } },
+        concert: { 
+          select: { 
+            id, title, date, 
+            artist: { select: { name } },
+            venue: { select: { name, city } }
+          }
+        },
+      },
+    }),
+    prisma.review.count(),
+  ]);
+  
+  return { reviews, currentPage: page, totalPages: Math.ceil(totalReviews / REVIEWS_PER_PAGE) };
+}
+```
+
+**Review Card Layout**:
+- User avatar: Gradient circle with first letter initial
+- Star rating: Using existing `StarRating` component
+- Concert info: Artist name @ Venue name with music icon
+- Date badges: Review date and concert date
+- Text preview: First 200 characters with ellipsis
+- Setlist highlights: Indigo-tinted box with "Setlist Highlights" label
+- "Read full review" link with animated chevron
+
+**Pagination Component**:
+- Previous/Next buttons with chevron icons
+- Disabled state when on first/last page
+- Page indicator showing "Page X of Y"
+- Uses query params (`?page=2`) for navigation
+
+**Design Pattern - Staggered Animation Ready**:
+```typescript
+<Card style={{ animationDelay: `${index * 50}ms` }}>
+```
+This enables future staggered fade-in animations for review cards.
+
+**Server Component Architecture**:
+- Page is async server component
+- Uses `Suspense` for loading state
+- `ReviewsContent` component handles async data fetching
+- Redirects invalid page numbers to page 1
+- Empty state shows "No reviews yet" message
+
+**Type Safety**:
+```typescript
+interface ReviewWithRelations {
+  id: string;
+  rating: number;
+  text: string | null;
+  setlistHighlights: string | null;
+  attended: boolean;
+  createdAt: Date;
+  user: { id: string; name: string | null; email: string };
+  concert: {
+    id: string;
+    title: string;
+    date: Date;
+    artist: { name: string };
+    venue: { name: string; city: string | null };
+  };
+}
+```
+
+### Fixed Pre-existing Issues
+
+**Next.js 16 Params Type Change**:
+Route handlers in Next.js 16 require params to be typed as `Promise`:
+```typescript
+// Before (Next.js 14/15)
+{ params }: { params: { userId: string } }
+
+// After (Next.js 16)
+{ params }: { params: Promise<{ userId: string }> }
+const { userId } = await params
+```
+
+**Button asChild Prop**:
+shadcn/ui Button component may not support `asChild` prop depending on version. Use wrapper pattern instead:
+```typescript
+<Link href="/path">
+  <Button>Click me</Button>
+</Link>
+```
+
+**State Spread Pattern**:
+When updating partial state in React, use spread to preserve other fields:
+```typescript
+setState((prev) => ({
+  ...prev,
+  concert: result.data,
+  loading: false,
+}));
+```
+
+### Files Modified
+- `src/app/reviews/page.tsx` (new)
+- `src/app/api/concerts/user/[userId]/reviews/route.ts` (params type fix)
+- `src/app/concerts/[id]/page.tsx` (state spread fix)
+- `src/components/concert-reviews-list.tsx` (asChild removal)
+
+### Verification
+- `npm run build` succeeds
+- TypeScript compilation passes
+- Route is dynamic (ƒ) - server-rendered on demand
+- Pagination uses proper skip/take with Prisma
+
+
+## Task 26: Attended Check-in Functionality
+
+### Server Action Pattern
+
+Created `src/actions/toggle-attended.ts` using the existing User-Concert many-to-many relation:
+
+**Key Implementation**:
+```typescript
+export async function toggleAttended(concertId: string) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return { error: "You must be logged in to check in" }
+  }
+
+  const existingRelation = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { concerts: { where: { id: concertId } } }
+  })
+
+  const isAttending = existingRelation?.concerts.some((c) => c.id === concertId)
+
+  if (isAttending) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { concerts: { disconnect: { id: concertId } } }
+    })
+    return { success: true, attended: false }
+  } else {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { concerts: { connect: { id: concertId } } }
+    })
+    return { success: true, attended: true }
+  }
+}
+```
+
+### API Endpoint Pattern
+
+Created `src/app/api/concerts/[id]/attended/route.ts` with GET and POST methods:
+- **GET**: Returns `{ attended: boolean }` for current user's attendance status
+- **POST**: Toggles attendance and returns updated status
+
+**Authentication**: Uses `auth()` from `@/lib/auth` to get session
+
+### Concert Page Integration
+
+Updated `src/app/concerts/[id]/page.tsx`:
+- Added `attended` and `checkingAttendance` state fields
+- Added `useEffect` to check attendance status on page load
+- Added `handleToggleAttendance` function for button click
+- Added Button component with conditional styling:
+  - Green (emerald) when checked in
+  - Purple outline when not checked in
+  - Disabled during loading state
+
+### Button Styling Pattern
+
+```typescript
+<Button
+  onClick={handleToggleAttendance}
+  disabled={state.checkingAttendance}
+  variant={state.attended ? "default" : "outline"}
+  className={state.attended 
+    ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
+    : "border-purple-500 text-purple-300 hover:bg-purple-500/20"
+  }
+>
+  {state.checkingAttendance ? "Loading..." : state.attended ? "✓ Checked In" : "○ Check In"}
+</Button>
+```
+
+### Database Schema
+
+The User-Concert many-to-many relation (already in schema):
+```prisma
+model User {
+  concerts  Concert[] @relation("UserConcerts")
+}
+
+model Concert {
+  users  User[] @relation("UserConcerts")
+}
+```
+
+### User Profile Count
+
+The attended count automatically updates via the relation - user's profile can query:
+```typescript
+const user = await prisma.user.findUnique({
+  where: { id: userId },
+  include: { _count: { select: { concerts: true } } }
+})
+```
+
+### Review Badge Already Present
+
+The `ReviewCard` component already shows an "Attended" badge (top-right corner) when `review.attended === true`:
+- Uses emerald gradient background
+- Shows "✓ Attended" text
+- Positioned absolutely in top-right
+
+### Build Fix Applied
+
+Fixed TypeScript error in `src/components/concert-reviews-list.tsx`:
+- Added null coalescing: `const reviews = result.data ?? []`
+- Removed `asChild` prop from Button (not supported by current button implementation)
+- Wrapped Button inside Link instead
+
+### Files Created/Modified
+
+1. **Created**: `src/actions/toggle-attended.ts`
+2. **Created**: `src/app/api/concerts/[id]/attended/route.ts`
+3. **Modified**: `src/app/concerts/[id]/page.tsx`
+4. **Fixed**: `src/components/concert-reviews-list.tsx`
+
+
+## Task 23: Profile Page Reviews List - Learnings
+
+### Pattern: User Reviews List Component
+- Created `UserReviewsList` component with pagination support
+- Fetches reviews via API route `/api/concerts/user/[userId]/reviews`
+- API returns: reviews array, total count, page info
+- Each review includes concert info (artist, venue, date, location)
+
+### Design Patterns Used
+- Card-based list layout with hover effects
+- Gradient borders (border-l-4) for visual hierarchy
+- Empty state with engaging emoji and CTA button
+- Pagination controls with previous/next buttons
+- Skeleton loading states for better UX
+
+### API Route Structure
+- Uses query params: `limit`, `offset`
+- Prisma query with nested includes for concert, artist, venue
+- Returns: { reviews, total, page, totalPages }
+
+### TypeScript Fix
+- Moved `fetchReviews` out of useEffect into `useCallback` for reusability
+- Required importing `useCallback` from React
+
+### Button Component Note
+- shadcn/ui Button doesn't support `asChild` prop
+- Use `<Link><Button>...</Button></Link>` pattern instead of `<Button asChild><Link>...</Link></Button>`
+
+### Files Created
+- `src/components/user-reviews-list.tsx` - Reviews list with pagination
+- `src/app/api/concerts/user/[userId]/reviews/route.ts` - API endpoint
+- `src/app/profile/page.tsx` - Profile page with reviews
+
+### Files Modified
+- `src/components/user-nav.tsx` - Added profile link
+- `src/components/concert-reviews-list.tsx` - Fixed asChild button issue
+
+## Task 25: Concert-Attached Reviews List
+
+### Implementation Summary
+
+Added a reviews list to the concert detail page that displays all reviews for a specific concert, shows the review count, and provides a "Write Review" button for authenticated users.
+
+### Files Created/Modified
+
+#### New Server Action: `src/actions/get-reviews-by-concert.ts`
+Fetches reviews for a specific concert from the database:
+- Uses `prisma.review.findMany()` with `where: { concertId }`
+- Includes user data (id, name) for display
+- Orders by `createdAt: "desc"` (newest first)
+- Returns formatted review objects with ISO date strings
+- Handles errors gracefully with success/error response pattern
+
+**Pattern**:
+```typescript
+export async function getReviewsByConcertId(concertId: string) {
+  const reviews = await prisma.review.findMany({
+    where: { concertId },
+    include: {
+      user: { select: { id: true, name: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+  // Return formatted data
+}
+```
+
+#### New Route: `src/app/concerts/[id]/review/new/page.tsx`
+Dedicated page for writing concert reviews:
+- Uses client component with `ReviewForm` component
+- Handles form submission via `createReview` server action
+- Redirects to concert page on success
+- Includes back navigation to concert detail
+- Matches existing edit review page pattern
+
+#### Modified: `src/app/concerts/[id]/page.tsx`
+Updated concert detail page to display reviews:
+- Added `useSession` hook to get current user ID
+- Added reviews state to `ConcertPageState` interface
+- Added `useEffect` to fetch reviews on mount
+- Added reviews list UI with:
+  - Review count badge (gradient pill design)
+  - "Write Review" button (authenticated users only)
+  - Loading state with skeletons
+  - Empty state with call-to-action
+  - Reviews list using `ReviewCard` component
+  - Edit redirect for user's own reviews
+
+### Design Decisions
+
+1. **Client-side reviews fetching**: Reviews are fetched client-side via useEffect rather than server-side to keep the concert page as a client component (preserves existing attendance functionality)
+
+2. **Review count badge**: Used gradient pill design matching the site's purple/pink theme for visual consistency
+
+3. **Write Review button placement**: Appears in the reviews card header for authenticated users, and in the empty state as a prominent CTA
+
+4. **Edit functionality**: Users can edit their own reviews by clicking the pencil icon (appears on hover), which navigates to `/reviews/[id]/edit`
+
+5. **Empty state handling**: Different messaging for authenticated vs unauthenticated users:
+   - Authenticated: "Be the first to share your experience!"
+   - Unauthenticated: "Sign in to be the first to review this concert"
+
+### UI Components Used
+
+- **ReviewCard**: Reused existing component for consistent review display
+- **Skeleton**: Loading state placeholders
+- **Button**: shadcn/ui button with gradient styling
+- **Card/CardHeader/CardTitle/CardContent**: shadcn/ui card structure
+- **Link**: Next.js navigation
+
+### Authentication Pattern
+
+Used `useSession` hook from `@/components/auth-provider`:
+```typescript
+const { session } = useSession();
+const currentUserId = session?.user?.id as string | undefined;
+```
+
+This provides client-side session access without requiring server component conversion.
+
+### Key Learnings
+
+1. **shadcn/ui Button doesn't support asChild by default**: The Button component needs to be wrapped with Link rather than using `asChild` prop (which requires `Slot` composition)
+
+2. **State management for nested data**: Added reviews array to existing ConcertPageState interface to keep all page state in one place
+
+3. **Client component constraints**: Keeping the concert page as a client component (for attendance toggle) means reviews must also be fetched client-side
+
+4. **ReviewCard integration**: The existing ReviewCard component already supported all needed props (review, currentUserId, onEdit), making integration straightforward
+
+### Build Verification
+
+Build passes successfully:
+```
+npm run build
+✓ Compiled successfully
+✓ Generating static pages
+```
+
+### Future Improvements (Not Implemented - Out of Scope)
+
+- Review sorting (by rating, date, helpfulness)
+- Review filtering (by rating, attended status)
+- Pagination for concerts with many reviews
+- Review helpfulness voting
+- Review reply threads
+- Delete review confirmation dialog

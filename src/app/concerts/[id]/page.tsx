@@ -1,30 +1,56 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getConcertById } from "@/lib/setlistfm";
 import type { Setlist } from "@/types/setlistfm";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ReviewFormContainer } from "@/components/review-form-container";
+import { getReviewsByConcertId } from "@/actions/get-reviews-by-concert";
+import { ReviewCard } from "@/components/review-card";
+import { useSession } from "@/components/auth-provider";
 
 interface ConcertPageState {
   concert: Setlist | null;
   loading: boolean;
   error: string | null;
   notFound: boolean;
+  attended: boolean;
+  checkingAttendance: boolean;
+  reviews: Array<{
+    id: string;
+    rating: number;
+    text: string | null;
+    setlistHighlights: string | null;
+    attended: boolean;
+    createdAt: string;
+    user: {
+      id: string;
+      name: string | null;
+    };
+  }>;
+  reviewsLoading: boolean;
 }
 
 export default function ConcertDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const concertId = params.id as string;
+  const { session } = useSession();
+  const currentUserId = session?.user?.id as string | undefined;
   
   const [state, setState] = useState<ConcertPageState>({
     concert: null,
     loading: true,
     error: null,
     notFound: false,
+    attended: false,
+    checkingAttendance: false,
+    reviews: [],
+    reviewsLoading: true,
   });
 
   useEffect(() => {
@@ -34,24 +60,86 @@ export default function ConcertDetailPage() {
       const result = await getConcertById(concertId);
       
       if (result.success) {
-        setState({
+        setState((prev) => ({
+          ...prev,
           concert: result.data,
           loading: false,
           error: null,
           notFound: false,
-        });
+          checkingAttendance: false,
+          reviewsLoading: true,
+          attended: false,
+        }));
       } else {
-        setState({
+        setState((prev) => ({
+          ...prev,
           concert: null,
           loading: false,
           error: result.error,
           notFound: result.code === 404,
-        });
+          checkingAttendance: false,
+          reviewsLoading: true,
+        }));
       }
     }
 
     fetchConcert();
   }, [concertId]);
+
+  useEffect(() => {
+    async function checkAttendance() {
+      setState((prev) => ({ ...prev, checkingAttendance: true }));
+      
+      try {
+        const response = await fetch(`/api/concerts/${concertId}/attended`);
+        const data = await response.json();
+        setState((prev) => ({ ...prev, attended: data.attended, checkingAttendance: false }));
+      } catch (error) {
+        console.error("Failed to check attendance:", error);
+        setState((prev) => ({ ...prev, checkingAttendance: false }));
+      }
+    }
+
+    if (!state.loading && state.concert) {
+      checkAttendance();
+    }
+  }, [concertId, state.loading, state.concert]);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      if (!state.loading && state.concert) {
+        const result = await getReviewsByConcertId(concertId);
+        if (result.success) {
+          setState((prev) => ({ ...prev, reviews: result.data || [], reviewsLoading: false }));
+        } else {
+          setState((prev) => ({ ...prev, reviewsLoading: false }));
+        }
+      }
+    }
+
+    fetchReviews();
+  }, [concertId, state.loading, state.concert]);
+
+  const handleToggleAttendance = async () => {
+    setState((prev) => ({ ...prev, checkingAttendance: true }));
+    
+    try {
+      const response = await fetch(`/api/concerts/${concertId}/attended`, {
+        method: "POST",
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setState((prev) => ({ ...prev, attended: data.attended, checkingAttendance: false }));
+      } else {
+        console.error("Failed to toggle attendance");
+        setState((prev) => ({ ...prev, checkingAttendance: false }));
+      }
+    } catch (error) {
+      console.error("Toggle attendance error:", error);
+      setState((prev) => ({ ...prev, checkingAttendance: false }));
+    }
+  };
 
   if (state.loading) {
     return <ConcertDetailSkeleton />;
@@ -130,13 +218,32 @@ export default function ConcertDetailPage() {
                   <p className="text-purple-300 text-lg">{concert.tour} Tour</p>
                 )}
               </div>
-              {concert.artist.imageUrl && (
-                <img
-                  src={concert.artist.imageUrl}
-                  alt={concert.artist.name}
-                  className="w-24 h-24 rounded-full object-cover border-2 border-purple-500/50 shadow-lg shadow-purple-500/20"
-                />
-              )}
+              <div className="flex items-center gap-4">
+                <Button
+                  onClick={handleToggleAttendance}
+                  disabled={state.checkingAttendance}
+                  variant={state.attended ? "default" : "outline"}
+                  className={state.attended 
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
+                    : "border-purple-500 text-purple-300 hover:bg-purple-500/20"
+                  }
+                >
+                  {state.checkingAttendance ? (
+                    "Loading..."
+                  ) : state.attended ? (
+                    <>✓ Checked In</>
+                  ) : (
+                    <>○ Check In</>
+                  )}
+                </Button>
+                {concert.artist.imageUrl && (
+                  <img
+                    src={concert.artist.imageUrl}
+                    alt={concert.artist.name}
+                    className="w-24 h-24 rounded-full object-cover border-2 border-purple-500/50 shadow-lg shadow-purple-500/20"
+                  />
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent className="relative">
@@ -234,6 +341,76 @@ export default function ConcertDetailPage() {
         </Card>
 
         <ReviewFormContainer concertId={concertId} />
+
+        <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">💬</span>
+                <CardTitle className="text-xl font-bold text-white">
+                  Reviews
+                  {state.reviews.length > 0 && (
+                    <span className="ml-2 px-2.5 py-0.5 text-xs font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full">
+                      {state.reviews.length}
+                    </span>
+                  )}
+                </CardTitle>
+              </div>
+              {currentUserId && (
+                <Link href={`/concerts/${concertId}/review/new`}>
+                  <Button
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-2 px-4 shadow-lg shadow-purple-500/25 transition-all duration-300"
+                  >
+                    Write Review
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {state.reviewsLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-4 w-32 bg-white/10" />
+                    <Skeleton className="h-20 w-full bg-white/10" />
+                  </div>
+                ))}
+              </div>
+            ) : state.reviews.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-5xl mb-4">🎵</div>
+                <p className="text-gray-400 text-lg mb-2">No reviews yet</p>
+                <p className="text-gray-500 text-sm">
+                  {currentUserId
+                    ? "Be the first to share your experience!"
+                    : "Sign in to be the first to review this concert"}
+                </p>
+                {currentUserId && (
+                  <Link href={`/concerts/${concertId}/review/new`}>
+                    <Button
+                      className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-2 px-6 shadow-lg shadow-purple-500/25 transition-all duration-300"
+                    >
+                      Write Review
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {state.reviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    currentUserId={currentUserId}
+                    onEdit={currentUserId === review.user.id ? (reviewId) => router.push(`/reviews/${reviewId}/edit`) : undefined}
+                    onDelete={undefined}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         <div className="text-center">
           <a
