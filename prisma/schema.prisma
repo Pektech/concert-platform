@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,37 +7,37 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   name      String?
   password  String
-  role      String   @default("user") // "user" | "admin"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      String    @default("user")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   reviews   Review[]
   concerts  Concert[] @relation("UserConcerts")
 }
 
 model Artist {
-  id          String   @id @default(cuid())
-  name        String
-  bio         String?
-  genre       String?
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  concerts    Concert[]
+  id        String    @id @default(cuid())
+  name      String
+  bio       String?
+  genre     String?
+  imageUrl  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  concerts  Concert[]
 }
 
 model Venue {
-  id          String   @id @default(cuid())
-  name        String
-  address     String?
-  city        String?
-  capacity    Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  concerts    Concert[]
+  id        String    @id @default(cuid())
+  name      String
+  address   String?
+  city      String?
+  capacity  Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  concerts  Concert[]
 }
 
 model Concert {
@@ -54,23 +51,23 @@ model Concert {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   artistId    String
-  artist      Artist   @relation(fields: [artistId], references: [id])
   venueId     String
+  artist      Artist   @relation(fields: [artistId], references: [id])
   venue       Venue    @relation(fields: [venueId], references: [id])
   reviews     Review[]
   users       User[]   @relation("UserConcerts")
 }
 
 model Review {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  concertId       String
-  concert         Concert  @relation(fields: [concertId], references: [id])
-  rating          Int
-  text            String?
+  id                String   @id @default(cuid())
+  userId            String
+  concertId         String
+  rating            Int
+  text              String?
   setlistHighlights String?
-  attended        Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  attended          Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  concert           Concert  @relation(fields: [concertId], references: [id])
+  user              User     @relation(fields: [userId], references: [id])
 }

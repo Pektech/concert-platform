@@ -6,6 +6,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { prisma } from "@/lib/prisma"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "My Profile",
+  description: "View your concert reviews and activity",
+  robots: {
+    index: false,
+  },
+}
 
 export default async function ProfilePage() {
   const session = await getServerSession()

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +8,26 @@ import Link from "next/link";
 
 interface UserProfilePageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: UserProfilePageProps): Promise<Metadata> {
+  const { id } = await params;
+  
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { name: true, email: true },
+  });
+
+  const userName = user?.name ?? "User";
+  
+  return {
+    title: userName,
+    description: `Profile of ${userName} on Concert Platform`,
+    openGraph: {
+      title: `${userName} | Concert Platform`,
+      description: `View ${userName}'s concert reviews and activity`,
+    },
+  };
 }
 
 export default async function UserProfilePage({ params }: UserProfilePageProps) {

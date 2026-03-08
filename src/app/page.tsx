@@ -1,4 +1,14 @@
 import Image from "next/image";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Discover concerts, track your attendance, and share reviews",
+  openGraph: {
+    title: "Concert Platform - Home",
+    description: "Discover concerts, track your attendance, and share reviews",
+  },
+};
 
 export default function Home() {
   return (

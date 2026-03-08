@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
@@ -8,6 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StarRating } from "@/components/star-rating";
 import { ChevronLeft, ChevronRight, Music, User, Calendar } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Recent Reviews",
+  description: "Discover concert experiences and reviews from the community",
+  openGraph: {
+    title: "Recent Reviews | Concert Platform",
+    description: "Discover concert experiences and reviews from the community",
+  },
+};
 
 const REVIEWS_PER_PAGE = 20;
 

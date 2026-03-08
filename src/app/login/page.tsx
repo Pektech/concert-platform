@@ -1,4 +1,13 @@
 import { LoginForm } from "@/components/login-form"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Login",
+  description: "Sign in to your Concert Platform account",
+  robots: {
+    index: false,
+  },
+}
 
 export default function LoginPage() {
   return (
