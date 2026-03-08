@@ -282,3 +282,96 @@ export type Result<T> = { success: true; data: T } | { success: false; error: st
 Setlist.fm API has rate limits (not implemented yet - future task):
 - Free tier: Limited requests per minute
 - Consider implementing caching layer (next task)
+
+## Task 12: Concert Search API Route + Caching
+
+### API Route Implementation
+
+Created `src/app/api/concerts/search/route.ts` with:
+
+**Query Parameters**:
+- `artist` (required): Artist name to search for
+- `venue` (optional): Venue filter (accepted but not yet implemented)
+- `page` (optional): Page number for pagination (default: 1)
+
+**Caching Strategy**:
+- Used `unstable_cache` from `next/cache` with tagged revalidation
+- Cache revalidation: 1 hour (3600 seconds)
+- Cache tags: `["concerts"]` for manual invalidation
+- Two cached functions:
+  - `searchArtistsCached(query: string)` - caches artist search results
+  - `searchConcertsCached(artistMbid: string)` - caches concert search by artist MBID
+
+**Pagination**:
+- 10 concerts per page (PER_PAGE constant)
+- Response includes pagination metadata: page, perPage, total, pages
+- Slices array results based on page number
+
+**Response Format**:
+```json
+{
+  "concerts": [...],
+  "pagination": {
+    "page": 1,
+    "perPage": 10,
+    "total": 50,
+    "pages": 5
+  }
+}
+```
+
+**Error Handling**:
+- 400: Missing `artist` parameter
+- 400: Invalid `page` parameter (non-integer or < 1)
+- 500: API errors from Setlist.fm
+- 500: Unexpected errors (catch block)
+
+### Pattern: unstable_cache with Tagged Revalidation
+
+```typescript
+const cachedFn = unstable_cache(
+  async (param: string) => {
+    const result = await externalApi(param);
+    return result;
+  },
+  ["cache-key"],
+  { revalidate: 3600, tags: ["concerts"] }
+);
+```
+
+Key points:
+- First argument: function to cache
+- Second argument: unique cache key (array of strings)
+- Third argument: options object with `revalidate` (seconds) and `tags` (array)
+- Tags enable manual cache invalidation via `revalidateTag("concerts")`
+
+### Type Fix
+
+`unstable_cache` expects mutable array for tags, not readonly:
+```typescript
+// WRONG - causes type error
+const CACHE_TAGS = ["concerts"] as const;
+
+// CORRECT
+const CACHE_TAGS = ["concerts"];
+```
+
+### Files Created
+- `src/app/api/concerts/search/route.ts` - API route handler
+
+### Verification
+- `npm run build` completes successfully
+- TypeScript compiles without errors
+- Route registered as dynamic (ƒ) in build output
+
+### Key Patterns
+- Search flow: artist name → search artists → get first match → search concerts by MBID
+- Caching applied at function level, not route level (fine-grained control)
+- Empty results return valid pagination structure with zero counts
+- Error messages include context for debugging
+
+### Gotchas
+- `unstable_cache` tags must be mutable arrays (no `as const`)
+- Setlist.fm API requires two-step search: artist name → MBID → concerts
+- API key must be set in `SETLIST_FM_API_KEY` environment variable
+- Venue parameter accepted but not yet implemented (future enhancement)
