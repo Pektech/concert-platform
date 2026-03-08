@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { UserReviewsList } from "@/components/user-reviews-list";
 
 interface UserProfilePageProps {
   params: Promise<{ id: string }>;
@@ -162,6 +163,8 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
             </div>
           </CardContent>
         </Card>
+
+        <UserReviewsList userId={user.id} />
 
         {reviewCount === 0 && concertsCount === 0 && (
           <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
