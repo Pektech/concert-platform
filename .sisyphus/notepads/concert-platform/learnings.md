@@ -168,3 +168,61 @@ Updated `src/app/layout.tsx`:
 - TypeScript compiles without errors
 - Static pages: `/`, `/login`, `/_not-found`
 - Dynamic route: `/api/auth/[...nextauth]`
+
+## Task 7: Sign Up Flow Implementation
+
+### Server Action Pattern for User Registration
+
+Created `src/actions/signup.ts` following the same pattern as login:
+- "use server" directive for server action
+- Zod schema validation on server-side
+- FormData input for progressive enhancement
+- bcrypt password hashing before storage
+- Duplicate email check with Prisma `findUnique`
+- Returns `{ error: string }` or `{ success: true }`
+
+```typescript
+const signupSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+})
+```
+
+### Form Component Pattern
+
+Created `src/components/signup-form.tsx`:
+- Uses react-hook-form with zodResolver for client-side validation
+- Three fields: name, email, password
+- Error banner displays server-side errors (duplicate email, etc.)
+- Loading state on submit button
+- Redirects to `/login` on success (MVP pattern - no auto-login)
+- Link to login page for existing users
+
+### Key Implementation Details
+
+1. **Password Hashing**: Used `bcrypt.hash(password, 10)` with 10 salt rounds before storing in database
+
+2. **Duplicate Email Handling**: Check with `prisma.user.findUnique({ where: { email } })` before creating user
+
+3. **Validation Consistency**: Same Zod schema used in both:
+   - Client-side (form component) for instant feedback
+   - Server-side (server action) for security
+
+4. **Redirect Pattern**: On success, `router.push("/login")` - forces user to log in with new credentials (MVP simplicity, avoids session edge cases)
+
+### Files Created
+- `src/actions/signup.ts` - Signup server action with password hashing
+- `src/components/signup-form.tsx` - Signup form with validation
+- `src/app/signup/page.tsx` - Signup page layout
+
+### Verification
+- `npm run build` completes successfully
+- TypeScript compiles without errors
+- Static pages: `/`, `/login`, `/signup`, `/_not-found`
+- Dynamic route: `/api/auth/[...nextauth]`
+
+### Gotchas
+- bcrypt is already installed for login flow - no new dependencies needed
+- Password minimum length (8 chars) must match between signup form and auth config
+- Name field required for signup but optional in database (nullable String)
