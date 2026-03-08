@@ -187,3 +187,80 @@ Base components added:
 - `npm run build` completes successfully
 - TypeScript compiles without errors
 - Static pages generated: `/` and `/_not-found`
+
+### Wave 1, Task 6: NextAuth.js Configuration with Credentials Provider
+
+#### Packages Installed
+- `next-auth@beta` (v5.0.0-beta.30) - NextAuth.js v5 is required for the new `handlers` export pattern
+- `@auth/prisma-adapter` - Prisma adapter for session storage
+- `bcrypt` - Password hashing for secure credential verification
+- `@types/bcrypt` - TypeScript types for bcrypt
+
+#### Important: NextAuth v5 vs v4
+- NextAuth v4 (stable, npm default) uses different API without `handlers` export
+- NextAuth v5 (beta) uses new pattern: `export const { auth, handlers, signIn, signOut } = NextAuth({...})`
+- MUST install with: `npm add next-auth@beta @auth/prisma-adapter`
+- v5 uses `@auth/prisma-adapter` instead of `@next-auth/prisma-adapter`
+
+#### Prisma 7 Adapter Requirement
+- Prisma 7 requires explicit adapter configuration for database connections
+- Installed `@prisma/adapter-pg` and `pg` for PostgreSQL adapter
+- Updated `src/lib/prisma.ts` to use `PrismaPg` adapter:
+  ```typescript
+  import { PrismaPg } from "@prisma/adapter-pg"
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+  const prisma = new PrismaClient({ adapter })
+  ```
+
+#### File Structure Created
+```
+src/
+  lib/
+    auth.ts          # NextAuth configuration with Credentials provider
+  app/
+    api/
+      auth/
+        [...nextauth]/
+          route.ts   # Auth route handler exporting GET/POST
+  types/
+    next-auth.d.ts   # Session type augmentation for user.id
+```
+
+#### Auth Configuration Key Points
+- Credentials provider with email/password fields
+- Zod schema validation for credentials (email, min 8 char password)
+- bcrypt.compare for password verification against hashed passwords
+- JWT session strategy (required for Prisma adapter)
+- Custom callbacks for JWT and session to include user.id
+- Sign-in page configured at `/login`
+
+#### Environment Variables Required
+- `NEXTAUTH_SECRET` - Generated with `openssl rand -base64 32` (32+ characters)
+- `NEXTAUTH_URL` - Set to `http://localhost:3000` for development
+- `DATABASE_URL` - PostgreSQL connection string (required for Prisma adapter)
+
+#### Type Augmentation Needed
+Created `src/types/next-auth.d.ts` to extend Session type with user.id:
+```typescript
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      name?: string | null
+      email?: string | null
+    }
+  }
+}
+```
+
+#### Verification Steps
+1. `npm run build` - Compiles successfully
+2. `curl localhost:3000/api/auth/session` - Returns `null` when not authenticated (expected)
+3. Auth route responds correctly at `/api/auth/[...nextauth]`
+
+#### Gotchas
+- Default `npm add next-auth` installs v4 (4.24.13), which lacks v5 API
+- Prisma 7 needs `@prisma/adapter-pg` package for PostgreSQL connections
+- DATABASE_URL must be set (even placeholder) for build to succeed with Prisma adapter
+- Session type augmentation required to add `user.id` to session object
+- Passwords stored in User model must be bcrypt-hashed before comparison
