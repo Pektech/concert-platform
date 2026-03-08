@@ -1,5 +1,23 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Setup
+
+Before running the development server, configure your environment variables:
+
+1. **Copy the example file**:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. **Configure each variable**:
+
+   - `DATABASE_URL`: PostgreSQL connection string from your database provider (e.g., Supabase, Neon, Railway)
+   - `NEXTAUTH_SECRET`: Random 32+ character string for session encryption. Generate with: `openssl rand -base64 32`
+   - `NEXTAUTH_URL`: Your application URL (`http://localhost:3000` for development)
+   - `SETLIST_FM_API_KEY`: Free API key from [setlist.fm](https://api.setlist.fm/)
+
+3. **Verify**: Ensure `.env.local` is in `.gitignore` (it should be by default)
+
 ## Getting Started
 
 First, run the development server:
