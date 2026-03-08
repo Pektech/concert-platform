@@ -1,266 +1,170 @@
-# Learnings - Concert Platform
+### Wave 1, Task 10: Logout + Auth UI Components
 
-## Project Conventions
-*To be populated as work progresses*
+#### Logout Implementation
+- Used NextAuth v5's `signOut` function exported from `src/lib/auth.ts`
+- No separate logout server action needed - `signOut` handles session destruction
+- Redirect to home page configured via `callbackUrl: "/"` option
 
-## Patterns Discovered
-*To be populated*
+#### Components Created
+1. `src/components/user-nav.tsx` - User navigation component with:
+   - `useSession` hook to check authentication state
+   - Loading state handling (returns null while session loads)
+   - Conditional rendering:
+     - Logged out: "Sign In" button linking to `/login`
+     - Logged in: User name/email display + "Logout" button
+   - Logout button triggers `signOut({ callbackUrl: "/" })` for clean session cleanup
 
-## Gotchas
-*To be populated*
+#### Layout Changes
+Modified `src/app/layout.tsx` to include:
+- `SessionProvider` wrapper from next-auth/react (required for useSession hook)
+- Header section with UserNav component positioned at top-right
+- Flex layout structure: header + main content area
 
-## Wave 1, Task 1: Project Scaffolding
+#### Build Fixes Required
+- Removed unused `getServerSession` import from `src/lib/auth.ts` (not available in NextAuth v5)
+- Fixed Zod v4 breaking change in `src/actions/login.ts`:
+  - Changed `parsed.error.errors` to `parsed.error.issues`
+  - Zod v4 renamed the `errors` array to `issues`
 
-### Successful Approach
-- Used `bun create next-app .` with flags: `--typescript --tailwind --eslint --app --src-dir --no-turbopack --import-alias "@/*" --use-npm`
-- Had to temporarily move `.sisyphus/` directory to avoid conflicts with existing files
-- Next.js 16.1.6 was installed (latest version as of 2026-03-07)
-
-### Configuration
-- Path aliases configured in `tsconfig.json`:
-  - `@/*` → `./src/*`
-  - `@/components/*` → `./src/components/*`
-  - `@/lib/*` → `./src/lib/*`
-  - `@/types/*` → `./src/types/*`
-  - `@/app/*` → `./src/app/*`
-
-### Directory Structure Created
-- `src/components/` - React components
-- `src/lib/` - Utility functions and helpers
-- `src/types/` - TypeScript type definitions
-- `prisma/` - Database schema and migrations
-- `__tests__/` - Test files
-
-### Build Verification
-- `bun run build` completed successfully with exit code 0
-- Compiled in 1344.1ms using Turbopack
-- Static pages generated: `/` and `/_not-found`
-
-### Notes
-- Bun installation required: `curl -fsSL https://bun.sh/install | bash`
-- PATH export needed: `export PATH="$HOME/.bun/bin:$PATH"`
-
-### Wave 1, Task 3: Environment Setup
-
-### Environment Variables Configuration
-Created `.env.example` with 4 required variables:
-- `DATABASE_URL`: PostgreSQL connection string (from Supabase, Neon, Railway, etc.)
-- `NEXTAUTH_SECRET`: Session encryption key (generate with `openssl rand -base64 32`)
-- `NEXTAUTH_URL`: Application URL (`http://localhost:3000` for dev)
-- `SETLIST_FM_API_KEY`: Concert data API key (get free key at https://api.setlist.fm/)
-
-### Best Practices Applied
-- `.env.example` contains placeholder values with documentation comments
-- `.env.local` created for actual values (gitignored by default)
-- `.gitignore` already includes `.env*` pattern (line 34)
-- README.md updated with "Environment Setup" section before "Getting Started"
-
-### Key Insight
-- Always document the source/obtaining method for each environment variable
-- Use descriptive comments in `.env.example` to guide new developers
-
-### Wave 1, Task 4: Vitest Test Infrastructure
-
-### Packages Installed
-All installed as dev dependencies:
-- `vitest` - Test runner
-- `@vitejs/plugin-react` - React support for Vite/Vitest
-- `@testing-library/react` - React testing utilities
-- `@testing-library/jest-dom` - DOM matchers for assertions
-- `jsdom` - Browser-like environment for tests
-
-### Configuration Files Created
-1. `vitest.config.ts` - Vitest configuration with:
-   - React plugin enabled
-   - jsdom test environment
-   - Setup file reference (`./__tests__/setup.ts`)
-   - Global test functions enabled
-
-2. `__tests__/setup.ts` - Test setup file:
-   - Imports `@testing-library/jest-dom` for DOM matchers
-
-3. `__tests__/example.test.tsx` - Example test demonstrating:
-   - Component rendering with Testing Library
-   - `toBeInTheDocument()` matcher usage
-
-### Package.json Script
-Added `"test": "vitest"` to scripts section
-
-### Verification
-- `npm test` runs successfully
-- Example test passes (18ms execution time)
-- Total duration: 548ms including setup and jsdom initialization
-
-### Gotcha Avoided
-- Had to re-read package.json before editing (npm install modified it)
-- Always re-read file after external modifications before using Edit tool
-
-### Wave 1, Task 2: Prisma ORM Setup
-
-### Prisma 7 Breaking Changes
-- Prisma 7 introduced a new configuration system (`prisma.config.ts`)
-- The `url` property in `datasource` block is deprecated
-- Must use `prisma.config.ts` for database connection configuration
-- Schema file should only declare provider, not connection URL
-
-### Correct Prisma 7 Setup
-1. Install: `npm add -D prisma` and `npm add @prisma/client`
-2. Create `prisma.config.ts` for datasource configuration
-3. Keep models in `prisma/schema.prisma` without `url` in datasource
-4. Run `npx prisma generate` to generate client
-
-### Schema Design Patterns
-- Used `cuid()` for IDs (better for distributed systems than auto-increment)
-- Timestamps: `createdAt` with `@default(now())`, `updatedAt` with `@updatedAt`
-- Relations use explicit foreign keys with `@relation` attribute
-- Many-to-many: User ↔ Concert via implicit relation table
-
-### Prisma Client Singleton (Next.js)
-- Prevents multiple instances in development due to hot reloading
-- Uses `globalThis` to store instance across HMR updates
-- Conditional logging: verbose in development, errors only in production
-
-### File Structure
-```
-prisma/
-  schema.prisma      # Model definitions
-prisma.config.ts     # Datasource configuration (Prisma 7)
-src/lib/prisma.ts    # PrismaClient singleton export
-.env                 # DATABASE_URL environment variable
-```
-
-### Wave 1, Task 5: shadcn/ui Setup with Base Layout
-
-#### shadcn Initialization
-- Used `npx shadcn@latest init -d` (not `shadcn-ui` which is deprecated)
-- Project uses Tailwind CSS v4 (detected automatically)
-- Style selected: `base-nova`
-- Configuration written to `components.json`
-
-#### Components Installed
-Base components added:
-- `button.tsx` - Button component with variants
-- `card.tsx` - Card container components
-- `input.tsx` - Form input component
-- `label.tsx` - Form label (uses @radix-ui/react-label)
-- `form.tsx` - Form field components (manually created, uses react-hook-form)
-
-#### Dependencies Added
-- `react-hook-form` - Form state management
-- `zod` - Schema validation
-- `@hookform/resolvers` - react-hook-form + zod integration
-- `@radix-ui/react-label` - Accessible label primitive
-- `@radix-ui/react-slot` - Component composition primitive
-
-#### Theme Configuration
-- globals.css updated with comprehensive CSS variables via shadcn
-- Uses OKLCH color space for better color manipulation
-- Light and dark mode themes configured
-- Chart colors (chart-1 through chart-5) available for data visualization
-- Sidebar CSS variables for future dashboard layouts
-- Border radius scale: `--radius-sm` to `--radius-4xl`
-
-#### Metadata Updated
-- app/layout.tsx metadata changed:
-  - Title: "Concert Platform"
-  - Description: "A modern platform for concert discovery and ticketing"
-
-#### Build Issues Resolved
-- prisma.config.ts had incorrect `provider` property in datasource block
-- Removed `provider` from prisma.config.ts (only `url` is valid there)
-- Provider is correctly defined in schema.prisma datasource block
-- Build now passes with exit code 0
+#### Dependencies Used
+- `next-auth/react` - `useSession` hook and `signOut` function
+- `@base-ui/react/button` - Button component (via shadcn)
+- No new packages required
 
 #### Files Created/Modified
-- Created: `components.json`
-- Created: `src/components/ui/button.tsx`
-- Created: `src/components/ui/card.tsx`
-- Created: `src/components/ui/input.tsx`
-- Created: `src/components/ui/label.tsx`
-- Created: `src/components/ui/form.tsx` (manual implementation)
-- Created: `src/lib/utils.ts` (cn helper function)
-- Modified: `src/app/globals.css` (shadcn theme tokens)
-- Modified: `src/app/layout.tsx` (metadata)
-- Modified: `prisma.config.ts` (fixed datasource config)
+- Created: `src/components/user-nav.tsx`
+- Modified: `src/app/layout.tsx` (SessionProvider wrapper + header)
+- Modified: `src/lib/auth.ts` (removed unused getServerSession)
+- Modified: `src/actions/login.ts` (fixed Zod v4 compatibility)
 
 #### Verification
 - `npm run build` completes successfully
 - TypeScript compiles without errors
-- Static pages generated: `/` and `/_not-found`
+- Static pages: `/`, `/_not-found`
+- Dynamic route: `/api/auth/[...nextauth]`
 
-### Wave 1, Task 6: NextAuth.js Configuration with Credentials Provider
+#### Key Patterns
+- Client-side session management with `useSession` hook
+- SessionProvider must wrap entire app for useSession to work
+- Logout flow: `signOut({ callbackUrl: "/" })` destroys session and redirects
+- Auth state display shows user.name with fallback to user.email
+- No logout confirmation dialog (MVP simplicity)
 
-#### Packages Installed
-- `next-auth@beta` (v5.0.0-beta.30) - NextAuth.js v5 is required for the new `handlers` export pattern
-- `@auth/prisma-adapter` - Prisma adapter for session storage
-- `bcrypt` - Password hashing for secure credential verification
-- `@types/bcrypt` - TypeScript types for bcrypt
+#### Gotchas
+- NextAuth v5 `signOut` is different from v4 - uses async function with options object
+- `useSession` requires SessionProvider in parent component tree
+- Zod v4 uses `.issues` instead of `.errors` for validation errors
+- Session loading state should be handled to prevent flicker
 
-#### Important: NextAuth v5 vs v4
-- NextAuth v4 (stable, npm default) uses different API without `handlers` export
-- NextAuth v5 (beta) uses new pattern: `export const { auth, handlers, signIn, signOut } = NextAuth({...})`
-- MUST install with: `npm add next-auth@beta @auth/prisma-adapter`
-- v5 uses `@auth/prisma-adapter` instead of `@next-auth/prisma-adapter`
+## Task 8: Login Flow Implementation
 
-#### Prisma 7 Adapter Requirement
-- Prisma 7 requires explicit adapter configuration for database connections
-- Installed `@prisma/adapter-pg` and `pg` for PostgreSQL adapter
-- Updated `src/lib/prisma.ts` to use `PrismaPg` adapter:
-  ```typescript
-  import { PrismaPg } from "@prisma/adapter-pg"
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
-  const prisma = new PrismaClient({ adapter })
-  ```
+### Pattern: NextAuth Credentials Login with Server Action
 
-#### File Structure Created
-```
-src/
-  lib/
-    auth.ts          # NextAuth configuration with Credentials provider
-  app/
-    api/
-      auth/
-        [...nextauth]/
-          route.ts   # Auth route handler exporting GET/POST
-  types/
-    next-auth.d.ts   # Session type augmentation for user.id
-```
+**Server Action Pattern** (`src/actions/login.ts`):
+- Use `signIn("credentials", ...)` from NextAuth configuration
+- Validate input with Zod schema before passing to signIn
+- Catch `AuthError` to handle invalid credentials gracefully
+- Return error object for form display rather than throwing
 
-#### Auth Configuration Key Points
-- Credentials provider with email/password fields
-- Zod schema validation for credentials (email, min 8 char password)
-- bcrypt.compare for password verification against hashed passwords
-- JWT session strategy (required for Prisma adapter)
-- Custom callbacks for JWT and session to include user.id
-- Sign-in page configured at `/login`
-
-#### Environment Variables Required
-- `NEXTAUTH_SECRET` - Generated with `openssl rand -base64 32` (32+ characters)
-- `NEXTAUTH_URL` - Set to `http://localhost:3000` for development
-- `DATABASE_URL` - PostgreSQL connection string (required for Prisma adapter)
-
-#### Type Augmentation Needed
-Created `src/types/next-auth.d.ts` to extend Session type with user.id:
 ```typescript
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string
-      name?: string | null
-      email?: string | null
-    }
+try {
+  await signIn("credentials", { email, password, redirectTo: "/" })
+  return { success: true }
+} catch (error) {
+  if (error instanceof AuthError) {
+    return { error: "Invalid credentials" }
   }
 }
 ```
 
-#### Verification Steps
-1. `npm run build` - Compiles successfully
-2. `curl localhost:3000/api/auth/session` - Returns `null` when not authenticated (expected)
-3. Auth route responds correctly at `/api/auth/[...nextauth]`
+**Form Component Pattern** (`src/components/login-form.tsx`):
+- Use react-hook-form with zodResolver for client-side validation
+- Submit via FormData to server action (compatible with progressive enhancement)
+- Handle errors in component state and display in error banner
+- Call `router.refresh()` + `router.push("/")` on success
 
-#### Gotchas
-- Default `npm add next-auth` installs v4 (4.24.13), which lacks v5 API
-- Prisma 7 needs `@prisma/adapter-pg` package for PostgreSQL connections
-- DATABASE_URL must be set (even placeholder) for build to succeed with Prisma adapter
-- Session type augmentation required to add `user.id` to session object
-- Passwords stored in User model must be bcrypt-hashed before comparison
+**Auth Configuration** (`src/lib/auth.ts`):
+- Credentials provider already configured with bcrypt password verification
+- Prisma adapter handles session storage
+- JWT session strategy configured
+- `pages.signIn: "/login"` routes unauthenticated users
+
+### Key Learnings
+
+1. **signIn() behavior**: When using `redirectTo`, NextAuth handles the redirect automatically on success. But for better error handling, catch the error and return it to the form.
+
+2. **Error handling**: NextAuth throws `AuthError` on authentication failure - catch this specifically to distinguish from other errors.
+
+3. **Form submission**: Using FormData with server action allows both JavaScript and no-JS scenarios.
+
+### Files Created
+- `src/actions/login.ts` - Login server action with validation
+- `src/components/login-form.tsx` - Login form with react-hook-form
+- `src/app/login/page.tsx` - Login page layout
+
+### Wave 2, Task 9: Session Management + Protected Routes
+
+#### getServerSession Helper (NextAuth v5 Pattern)
+In NextAuth.js v5 (beta), the `auth` function returned from `NextAuth()` serves as the session getter for server components:
+```typescript
+export { auth as getServerSession }
+```
+- No need to import `getServerSession` from next-auth package (it doesn't exist in v5)
+- The `auth` function automatically reads session from request context
+- Use in Server Components and Server Actions to check authentication
+
+#### useSession Hook Wrapper for Client Components
+Created custom hook wrapper in `src/components/auth-provider.tsx`:
+- `AuthProvider` component wraps `SessionProvider` from next-auth/react
+- `useSession` hook provides session data with loading state handling
+- Optional `redirectToLogin` parameter for automatic redirects
+- Returns: `session`, `status`, `isLoading`, `isAuthenticated`, `isUnauthenticated`, `update`
+
+#### Protected Route Middleware
+Created `src/middleware.ts` with Next.js Edge Middleware:
+- Runs on every request before rendering
+- Checks session using `await auth()`
+- Redirects unauthenticated users to `/login` with callbackUrl
+- Redirects authenticated users away from login/signup pages to home
+- Matcher excludes: `/api`, `/_next/static`, `/_next/image`, static files
+
+#### Server Component Protection Helper
+Created `src/lib/require-auth.ts`:
+- `requireAuth()` function for use in Server Components
+- Calls `getServerSession()` and redirects if no session
+- Accepts optional `callbackUrl` parameter for redirect after login
+- Returns session if authenticated
+
+#### Loading State Component
+Created `src/components/protected-route.tsx`:
+- Client component for wrapping protected client-side routes
+- Uses `useSession` hook with `redirectToLogin` option
+- Shows loading spinner during session check
+- Prevents flash of protected content
+
+#### Layout Integration
+Updated `src/app/layout.tsx`:
+- Wrapped app with custom `AuthProvider` component
+- Provides session context to all client components
+- Enables `useSession` hook usage throughout the app
+
+#### Key Insights
+- NextAuth v5 uses `auth` function instead of separate `getServerSession`
+- Middleware provides route-level protection automatically
+- Server components need explicit `requireAuth()` calls for protection
+- Client components need `ProtectedRoute` wrapper for loading states
+- Always pass `callbackUrl` to preserve user's intended destination after login
+
+#### Files Created
+- `src/lib/auth.ts` - Added `getServerSession` export
+- `src/components/auth-provider.tsx` - Session provider and useSession hook
+- `src/middleware.ts` - Protected route middleware
+- `src/lib/require-auth.ts` - Server component protection helper
+- `src/components/protected-route.tsx` - Client-side loading state wrapper
+- `src/app/layout.tsx` - Updated to use AuthProvider
+
+#### Build Verification
+- `npm run build` completes successfully
+- TypeScript compiles without errors
+- Static pages: `/`, `/login`, `/_not-found`
+- Dynamic route: `/api/auth/[...nextauth]`

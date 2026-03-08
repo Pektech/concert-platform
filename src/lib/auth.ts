@@ -71,3 +71,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     signIn: "/login",
   }
 })
+
+/**
+ * Get the current server session from request headers
+ * Use in Server Components and Server Actions
+ */
+export { auth as getServerSession }
