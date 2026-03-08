@@ -226,3 +226,59 @@ Created `src/components/signup-form.tsx`:
 - bcrypt is already installed for login flow - no new dependencies needed
 - Password minimum length (8 chars) must match between signup form and auth config
 - Name field required for signup but optional in database (nullable String)
+
+## Task 11: Setlist.fm API Client + Types
+
+### TypeScript Types Created
+Created comprehensive TypeScript types for Setlist.fm API responses:
+- `Artist` - Artist information with MBID, name, sort name, image
+- `Venue` - Venue details with city, country, coordinates
+- `Concert` - Concert/setlist with date, venue, artist, tour info
+- `Setlist` - Full setlist with sets and songs
+- `SetlistFMAPIResult<T>` - Discriminated union for success/error responses
+
+### API Client Implementation
+Created `src/lib/setlistfm.ts` with:
+- Base URL: `https://api.setlist.fm/rest/1.0`
+- Auth header: `x-api-key` from `SETLIST_FM_API_KEY` environment variable
+- Centralized error handling with `handleRequest` helper function
+- Three exported functions:
+  1. `searchArtists(query: string)` - Search artists by name
+  2. `searchConcerts(artistMbid: string)` - Get concerts by artist MBID
+  3. `getConcertById(id: string)` - Get specific setlist by ID
+
+### Error Handling Pattern
+All API functions return `SetlistFMAPIResult<T>` discriminated union:
+```typescript
+// Success case
+{ success: true; data: T }
+
+// Error case
+{ success: false; error: string; code?: number }
+```
+
+This pattern allows callers to check `result.success` and handle errors gracefully without try/catch.
+
+### TypeScript Gotcha
+Discriminated unions in TypeScript require `type` keyword (not `interface`) when using union syntax:
+```typescript
+// WRONG - interface doesn't support union
+export interface Result<T> { success: true; data: T } | { success: false; error: string }
+
+// CORRECT - type alias with union
+export type Result<T> = { success: true; data: T } | { success: false; error: string }
+```
+
+### Files Created
+- `src/types/setlistfm.ts` - TypeScript type definitions
+- `src/lib/setlistfm.ts` - API client module
+
+### Verification
+- `npm run build` completes successfully
+- TypeScript compiles without errors
+- API key validation throws error if `SETLIST_FM_API_KEY` not set
+
+### API Rate Limiting Note
+Setlist.fm API has rate limits (not implemented yet - future task):
+- Free tier: Limited requests per minute
+- Consider implementing caching layer (next task)
