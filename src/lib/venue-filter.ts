@@ -123,8 +123,9 @@ export function filterAndSortVenueResults(
     let score = 0;
     const filtered: FilteredVenueResult = { ...result };
 
-    // Check fuzzy match
-    filtered.isFuzzyMatch = isFuzzyMatch(query, result.name);
+    // Check fuzzy match (but not exact matches - those don't need a badge)
+    const isExactMatch = result.name.toLowerCase().trim() === query.toLowerCase().trim();
+    filtered.isFuzzyMatch = !isExactMatch && isFuzzyMatch(query, result.name);
     if (filtered.isFuzzyMatch) {
       score += 50;
     }
@@ -211,8 +212,9 @@ export function filterAndSortCityResults(
     let score = 0;
     const filtered: FilteredCityResult = { ...result };
 
-    // Check fuzzy match
-    filtered.isFuzzyMatch = isFuzzyMatch(query, result.name);
+    // Check fuzzy match (but not exact matches - those don't need a badge)
+    const isExactMatch = result.name.toLowerCase().trim() === query.toLowerCase().trim();
+    filtered.isFuzzyMatch = !isExactMatch && isFuzzyMatch(query, result.name);
     if (filtered.isFuzzyMatch) {
       score += 50;
     }
