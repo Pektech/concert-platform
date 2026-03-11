@@ -7,15 +7,18 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String?
-  password  String
-  role      String    @default("user")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  reviews   Review[]
-  concerts  Concert[] @relation("UserConcerts")
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  password     String
+  role         String    @default("user")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  reviews      Review[]
+  concerts     Concert[] @relation("UserConcerts")
+  followers    Follow[]  @relation("Following")
+  following    Follow[]  @relation("Followers")
+  likes        ReviewLike[]
 }
 
 model Artist {
@@ -77,8 +80,9 @@ model Review {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  concert           Concert  @relation(fields: [concertId], references: [id])
-  user              User     @relation(fields: [userId], references: [id])
+  concert           Concert      @relation(fields: [concertId], references: [id])
+  user              User         @relation(fields: [userId], references: [id])
+  likes             ReviewLike[]
 
   @@index([userId])
   @@index([concertId])
@@ -97,4 +101,31 @@ model ApiCache {
 
   @@index([key])
   @@index([expiresAt])
+}
+
+/// User follows other users (social graph)
+model Follow {
+  id           DateTime @default(now())
+  followerId   String
+  followingId  String
+  follower     User     @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following    User     @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+/// Review likes
+model ReviewLike {
+  id        String   @id @default(cuid())
+  userId    String
+  reviewId  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, reviewId])
+  @@index([userId])
+  @@index([reviewId])
 }

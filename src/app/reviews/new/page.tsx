@@ -231,7 +231,7 @@ export default function NewReviewPage() {
       if (response.ok) {
         const data = await response.json();
         toast.success("Review created!");
-        router.push(`/reviews/${data.review.id}`);
+        router.push(`/reviews`);
       } else {
         const status = response.status;
         const text = await response.text();
