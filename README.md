@@ -1,3 +1,23 @@
+# ConcertVibe 🎵
+
+A [Next.js](https://nextjs.org) platform for discovering concerts, writing reviews, and connecting with other music fans.
+
+## Features
+
+### Core Features
+- ✍️ **Write Reviews** - Rate concerts, share setlist highlights, and document your experiences
+- 🔍 **Search Concerts** - Find upcoming shows powered by MusicBrainz database
+- 👤 **User Profiles** - Track your concert history and review activity
+- 📊 **Browse Reviews** - Discover what other fans are saying about shows
+
+### Social Features (New!)
+- ❤️ **Like Reviews** - Show appreciation for helpful reviews (with optimistic UI updates)
+- 👥 **Follow Users** - Connect with reviewers whose taste you trust
+- 📰 **Activity Feed** - See reviews from users you follow on `/feed`
+- 📋 **Followers/Following** - View who follows whom on profile pages
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Environment Setup
@@ -47,7 +67,25 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Testing
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Run specific test files:
+
+```bash
+# Social features tests
+npm test -- social-features
+
+# E2E tests
+npm run test:e2e
+```
+
+## Deployment
 
 This Next.js app is ready for deployment on [Vercel](https://vercel.com). No `vercel.json` configuration is required.
 
