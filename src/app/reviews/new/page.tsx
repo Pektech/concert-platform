@@ -22,6 +22,7 @@ import {
   hasDirectCityMatch,
 } from "@/lib/venue-filter";
 import { AutocompleteInput } from "@/components/autocomplete-input";
+import { toast } from "sonner";
 
 // Types
 interface Artist {
@@ -229,10 +230,27 @@ export default function NewReviewPage() {
 
       if (response.ok) {
         const data = await response.json();
+        toast.success("Review created!");
         router.push(`/reviews/${data.review.id}`);
       } else {
-        const error = await response.json();
-        console.error("Review creation failed:", error);
+        const status = response.status;
+        const text = await response.text();
+        let errorMessage = "Failed to create review";
+        
+        try {
+          const error = JSON.parse(text);
+          console.error("Review creation failed:", { status, error });
+          errorMessage = error.error || error.message || errorMessage;
+          
+          // Show detailed validation errors
+          if (error.details && Array.isArray(error.details)) {
+            errorMessage = error.details.map((d: { message: string }) => d.message).join(", ");
+          }
+        } catch {
+          console.error("Review creation failed:", { status, text });
+        }
+        
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error("Submit error:", error);
