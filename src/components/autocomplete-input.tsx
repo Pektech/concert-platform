@@ -126,7 +126,7 @@ export function AutocompleteInput({
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : totalItems - 1));
-    if (e.key === "Enter") {
+    } else if (e.key === "Enter") {
       e.preventDefault();
       if (highlightedIndex >= 0) {
         if (highlightedIndex < results.length) {
