@@ -121,9 +121,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ review });
   } catch (error) {
-    console.error("Error creating review:", error);
+    console.error("=== REVIEW CREATION ERROR ===");
+    console.error("Error type:", error?.constructor?.name);
+    console.error("Error message:", error instanceof Error ? error.message : String(error));
+    console.error("Full error:", JSON.stringify(error, null, 2));
     
     if (error instanceof z.ZodError) {
+      console.error("Zod issues:", error.issues);
       return NextResponse.json(
         { error: "Invalid data", details: error.issues },
         { status: 400 }
@@ -131,7 +135,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: "Failed to create review" },
+      { error: "Failed to create review", message: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }
