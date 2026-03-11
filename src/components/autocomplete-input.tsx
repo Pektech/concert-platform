@@ -43,6 +43,7 @@ export function AutocompleteInput({
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [searchCompleted, setSearchCompleted] = useState(false);
+  const [ignoreNextChange, setIgnoreNextChange] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const search = useCallback(async (query: string) => {
@@ -72,6 +73,12 @@ export function AutocompleteInput({
   }, [apiEndpoint, transformResults]);
 
   useEffect(() => {
+    // Ignore programmatic value changes (from onSelect)
+    if (ignoreNextChange) {
+      setIgnoreNextChange(false);
+      return;
+    }
+
     const timer = setTimeout(() => {
       if (value) {
         search(value);
@@ -83,7 +90,7 @@ export function AutocompleteInput({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [value, search]);
+  }, [value, search, ignoreNextChange]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -138,6 +145,7 @@ export function AutocompleteInput({
     onSelect(result);
     setIsOpen(false);
     setHighlightedIndex(-1);
+    setIgnoreNextChange(true);
   };
 
   const handleManualAddClick = () => {
@@ -194,7 +202,8 @@ export function AutocompleteInput({
                 >
                   <div className="flex items-center gap-2">
                     <p className="text-white font-medium">{result.name}</p>
-                    {result.isFuzzyMatch && (
+                    {/* Only show "Close match" for fuzzy matches, not direct matches */}
+                    {result.isFuzzyMatch === true && (
                       <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-500/10 text-amber-400">
                         Close match
                       </span>
