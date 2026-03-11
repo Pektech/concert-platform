@@ -43,7 +43,7 @@ export function AutocompleteInput({
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [searchCompleted, setSearchCompleted] = useState(false);
-  const [ignoreNextChange, setIgnoreNextChange] = useState(false);
+  const [lastSelectedValue, setLastSelectedValue] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const search = useCallback(async (query: string) => {
@@ -73,10 +73,14 @@ export function AutocompleteInput({
   }, [apiEndpoint, transformResults]);
 
   useEffect(() => {
-    // Ignore programmatic value changes (from onSelect)
-    if (ignoreNextChange) {
-      setIgnoreNextChange(false);
+    // Don't search if the value is exactly what we just selected
+    if (lastSelectedValue !== null && value === lastSelectedValue) {
       return;
+    }
+
+    // If the value changed and it's not the selected value, clear the selection state
+    if (lastSelectedValue !== null && value !== lastSelectedValue) {
+      setLastSelectedValue(null);
     }
 
     const timer = setTimeout(() => {
@@ -90,7 +94,7 @@ export function AutocompleteInput({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [value, search, ignoreNextChange]);
+  }, [value, search, lastSelectedValue]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -122,15 +126,17 @@ export function AutocompleteInput({
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : totalItems - 1));
-    } else if (e.key === "Enter") {
+    if (e.key === "Enter") {
       e.preventDefault();
       if (highlightedIndex >= 0) {
         if (highlightedIndex < results.length) {
           const result = results[highlightedIndex];
+          setLastSelectedValue(result.name);
           onSelect(result);
           setIsOpen(false);
           setHighlightedIndex(-1);
         } else if (showManualOption && highlightedIndex === results.length) {
+          setLastSelectedValue(value);
           onManualAdd?.();
           setIsOpen(false);
           setHighlightedIndex(-1);
@@ -142,13 +148,14 @@ export function AutocompleteInput({
   };
 
   const handleSelectResult = (result: AutocompleteOption) => {
+    setLastSelectedValue(result.name);
     onSelect(result);
     setIsOpen(false);
     setHighlightedIndex(-1);
-    setIgnoreNextChange(true);
   };
 
   const handleManualAddClick = () => {
+    setLastSelectedValue(value);
     onManualAdd?.();
     setIsOpen(false);
     setHighlightedIndex(-1);
