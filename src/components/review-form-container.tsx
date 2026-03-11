@@ -16,16 +16,16 @@ export function ReviewFormContainer({ concertId }: ReviewFormContainerProps) {
 
   const handleSubmit = async (values: {
     rating: number
+    title?: string
     text?: string
     setlistHighlights?: string
-    attended?: boolean
   }) => {
     startTransition(async () => {
       const formData = new FormData()
       formData.append("rating", values.rating.toString())
+      if (values.title) formData.append("title", values.title)
       if (values.text) formData.append("text", values.text)
       if (values.setlistHighlights) formData.append("setlistHighlights", values.setlistHighlights)
-      formData.append("attended", values.attended ? "on" : "off")
       formData.append("concertId", concertId)
 
       const result = await createReview(formData)
@@ -46,9 +46,9 @@ export function ReviewFormContainer({ concertId }: ReviewFormContainerProps) {
       error={error}
       defaultValues={{
         rating: 0,
+        title: "",
         text: "",
         setlistHighlights: "",
-        attended: false,
       }}
     />
   )

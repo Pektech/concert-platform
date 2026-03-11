@@ -8,7 +8,6 @@ import { z } from "zod"
 import { login } from "@/actions/login"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Form,
   FormControl,
@@ -128,12 +127,12 @@ export function LoginForm() {
               )}
             />
 
-            <Button
+<Button
               type="submit"
               className="w-full"
               disabled={isPending}
             >
-              {isPending ? "Signing in..." : "Sign in"}
+              {isPending ? "Signing In..." : "Sign In"}
             </Button>
           </form>
         </Form>

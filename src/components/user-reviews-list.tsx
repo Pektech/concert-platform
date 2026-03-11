@@ -35,15 +35,6 @@ interface UserReviewsListProps {
   pageSize?: number
 }
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(date)
-}
-
 function formatConcertDate(dateString: string): string {
   const date = new Date(dateString)
   return new Intl.DateTimeFormat("en-US", {
@@ -124,7 +115,7 @@ export function UserReviewsList({ userId, pageSize = 5 }: UserReviewsListProps) 
         <div className="text-7xl mb-6 animate-bounce">🎵</div>
         <h3 className="text-2xl font-bold text-white mb-3">No Reviews Yet</h3>
         <p className="text-gray-400 max-w-md mx-auto mb-8 leading-relaxed">
-          You haven't reviewed any concerts yet. Start exploring concerts and share your
+          You haven&apos;t reviewed any concerts yet. Start exploring concerts and share your
           experiences with the community!
         </p>
         <Link href="/">

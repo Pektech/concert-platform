@@ -34,9 +34,9 @@ export default async function EditReviewPage({ params }: EditReviewPageProps) {
       review={{
         id: review.id,
         rating: review.rating,
+        title: review.title,
         text: review.text,
         setlistHighlights: review.setlistHighlights,
-        attended: review.attended,
         concertId: review.concertId,
       }}
     />

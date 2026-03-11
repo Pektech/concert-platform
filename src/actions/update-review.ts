@@ -8,9 +8,9 @@ import { redirect } from "next/navigation"
 const updateReviewSchema = z.object({
   id: z.string().cuid(),
   rating: z.number().min(1).max(5),
+  title: z.string().optional(),
   text: z.string().optional(),
   setlistHighlights: z.string().optional(),
-  attended: z.boolean().optional(),
 })
 
 export async function updateReview(formData: FormData) {
@@ -26,9 +26,9 @@ export async function updateReview(formData: FormData) {
     const parsed = updateReviewSchema.safeParse({
       id: formData.get("id"),
       rating: parseInt(formData.get("rating") as string, 10),
+      title: formData.get("title") || undefined,
       text: formData.get("text"),
       setlistHighlights: formData.get("setlistHighlights"),
-      attended: formData.get("attended") === "on",
     })
 
     if (!parsed.success) {
@@ -37,7 +37,7 @@ export async function updateReview(formData: FormData) {
       }
     }
 
-    const { id, rating, text, setlistHighlights, attended } = parsed.data
+    const { id, rating, title, text, setlistHighlights } = parsed.data
     const userId = session.user.id
 
     const existingReview = await prisma.review.findUnique({
@@ -60,21 +60,13 @@ export async function updateReview(formData: FormData) {
       where: { id },
       data: {
         rating,
+        title: title ?? null,
         text: text ?? null,
         setlistHighlights: setlistHighlights ?? null,
-        attended,
       },
     })
 
-    const concert = await prisma.concert.findUnique({
-      where: { id: existingReview.concertId },
-    })
-    
-    if (concert) {
-      redirect(`/concerts/${concert.id}`)
-    }
-    
-    redirect("/")
+    redirect(`/concerts/${existingReview.concertId}`)
   } catch (error) {
     console.error("Update review error:", error)
     return {

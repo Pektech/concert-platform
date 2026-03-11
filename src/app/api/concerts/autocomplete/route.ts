@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { unstable_cache } from "next/cache";
-import { searchArtists } from "@/lib/setlistfm";
-import type { Artist, Concert } from "@/types/setlistfm";
-import { searchConcerts } from "@/lib/setlistfm";
+import { searchArtists, getArtistEvents, formatEventDate } from "@/lib/musicbrainz-db";
 
 const CACHE_REVALIDATION_SECONDS = 3600;
 const CACHE_TAGS = ["concerts-autocomplete"];
@@ -10,19 +8,17 @@ const MAX_RESULTS = 8;
 
 const searchArtistsCached = unstable_cache(
   async (query: string) => {
-    const result = await searchArtists(query);
-    return result;
+    return searchArtists(query, MAX_RESULTS);
   },
-  ["artists-autocomplete"],
+  ["artists-autocomplete-mb"],
   { revalidate: CACHE_REVALIDATION_SECONDS, tags: CACHE_TAGS }
 );
 
-const searchConcertsCached = unstable_cache(
-  async (artistMbid: string) => {
-    const result = await searchConcerts(artistMbid);
-    return result;
+const getArtistEventsCached = unstable_cache(
+  async (artistGid: string) => {
+    return getArtistEvents(artistGid, MAX_RESULTS);
   },
-  ["concerts-by-artist-autocomplete"],
+  ["artist-events-autocomplete-mb"],
   { revalidate: CACHE_REVALIDATION_SECONDS, tags: CACHE_TAGS }
 );
 
@@ -55,38 +51,37 @@ export async function GET(request: NextRequest) {
 
     const results: AutocompleteResult[] = [];
 
-    if (artistSearchResult.data.artists && artistSearchResult.data.artists.length > 0) {
-      const artists = artistSearchResult.data.artists.slice(0, MAX_RESULTS);
-      artists.forEach((artist: Artist) => {
+    if (artistSearchResult.data.artists.length > 0) {
+      artistSearchResult.data.artists.forEach((artist) => {
         results.push({
-          id: `artist-${artist.mbid}`,
+          id: `artist-${artist.gid}`,
           type: "artist",
           name: artist.name,
-          subtitle: artist.disambiguation || "Artist",
-          url: `/artists/${artist.mbid}`,
-          imageUrl: artist.imageUrl,
+          subtitle: artist.disambiguation || artist.type || "Artist",
+          url: `/artists/${artist.gid}`,
+          imageUrl: null,
         });
       });
     }
 
     if (results.length > 0 && results[0].type === "artist") {
-      const topArtistMbid = (results[0] as any).id.replace("artist-", "");
-      const concertSearchResult = await searchConcertsCached(topArtistMbid);
+      const topArtistGid = results[0].id.replace("artist-", "");
+      const eventsResult = await getArtistEventsCached(topArtistGid);
 
-      if (concertSearchResult.success && concertSearchResult.data.setlists) {
-        const concerts = concertSearchResult.data.setlists.slice(0, MAX_RESULTS - results.length);
-        concerts.forEach((concert: Concert) => {
-          const date = new Date(concert.date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          });
+      if (eventsResult.success && eventsResult.data.events.length > 0) {
+        const events = eventsResult.data.events.slice(0, MAX_RESULTS - results.length);
+        events.forEach((event) => {
+          const dateStr = formatEventDate(event);
+          const venueStr = event.venue 
+            ? `${event.venue.name}${event.venue.area ? `, ${event.venue.area}` : ""}`
+            : "Unknown venue";
+          
           results.push({
-            id: `concert-${concert.id}`,
+            id: `concert-${event.gid}`,
             type: "concert",
-            name: `${concert.artist.name} - ${date}`,
-            subtitle: `${concert.venue.name}, ${concert.venue.city.name}`,
-            url: `/concerts/${concert.id}`,
+            name: `${event.name || "Concert"} - ${dateStr}`,
+            subtitle: venueStr,
+            url: `/concerts/${event.gid}`,
           });
         });
       }

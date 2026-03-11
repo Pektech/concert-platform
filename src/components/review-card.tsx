@@ -9,9 +9,9 @@ import { Pencil, Trash2 } from "lucide-react"
 interface Review {
   id: string
   rating: number
+  title: string | null
   text: string | null
   setlistHighlights: string | null
-  attended: boolean
   createdAt: string
   user: {
     id: string
@@ -41,19 +41,6 @@ export function ReviewCard({ review, currentUserId, onEdit, onDelete }: ReviewCa
 
   return (
     <Card className="group/review relative overflow-hidden border-l-4 border-l-primary/30 hover:border-l-primary transition-colors duration-300">
-      {review.attended && (
-        <div className="absolute top-0 right-0">
-          <div className="bg-gradient-to-l from-emerald-500/10 to-transparent px-3 py-1.5">
-            <Badge
-              variant="secondary"
-              className="bg-emerald-500/90 text-emerald-950 hover:bg-emerald-500/90 font-semibold text-xs shadow-sm"
-            >
-              ✓ Attended
-            </Badge>
-          </div>
-        </div>
-      )}
-
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
@@ -63,6 +50,11 @@ export function ReviewCard({ review, currentUserId, onEdit, onDelete }: ReviewCa
                 {formatDate(review.createdAt)}
               </span>
             </div>
+            {review.title && (
+              <p className="text-base font-semibold text-foreground mb-1">
+                {review.title}
+              </p>
+            )}
             <p className="text-sm font-semibold text-foreground truncate">
               {review.user.name || "Anonymous"}
             </p>

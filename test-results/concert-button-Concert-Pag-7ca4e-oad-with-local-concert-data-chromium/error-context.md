@@ -1,0 +1,105 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - link "ConcertVibe" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]: ConcertVibe
+        - navigation [ref=e8]:
+          - link "Home" [ref=e9] [cursor=pointer]:
+            - /url: /
+            - button "Home" [ref=e10]
+          - link "Browse Reviews" [ref=e11] [cursor=pointer]:
+            - /url: /reviews
+            - button "Browse Reviews" [ref=e12]
+          - link "Search Concerts" [ref=e13] [cursor=pointer]:
+            - /url: /concerts/search
+            - button "Search Concerts" [ref=e14]
+        - generic [ref=e15]:
+          - link "Sign In" [ref=e16] [cursor=pointer]:
+            - /url: /login
+            - button "Sign In" [ref=e17]
+          - link "Get Started" [ref=e18] [cursor=pointer]:
+            - /url: /signup
+            - button "Get Started" [ref=e19]
+    - main [ref=e20]:
+      - generic [ref=e22]:
+        - link "Back to Home" [ref=e23] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - text: Back to Home
+        - generic [ref=e26]:
+          - generic [ref=e29]:
+            - generic [ref=e30]:
+              - heading "Radiohead" [level=1] [ref=e31]
+              - generic [ref=e32]: Local Event
+            - generic [ref=e33]:
+              - button "○ Check In" [ref=e34]
+              - img "Radiohead" [ref=e35]
+          - generic [ref=e37]:
+            - generic [ref=e38]:
+              - generic [ref=e39]:
+                - generic [ref=e40]: 📅
+                - generic [ref=e41]:
+                  - paragraph [ref=e42]: Date
+                  - paragraph [ref=e43]: Friday, May 27, 2022
+              - generic [ref=e44]:
+                - generic [ref=e45]: 📍
+                - generic [ref=e46]:
+                  - paragraph [ref=e47]: Venue
+                  - paragraph [ref=e48]: Red Rocks Amphitheatre
+            - generic [ref=e50]:
+              - generic [ref=e51]: 🏙️
+              - generic [ref=e52]:
+                - paragraph [ref=e53]: Location
+                - paragraph [ref=e54]: Morrison, CO
+        - generic [ref=e55]:
+          - generic [ref=e57]:
+            - generic [ref=e58]:
+              - generic [ref=e59]: 💬
+              - generic [ref=e60]: Reviews2
+            - link "Sign in to Review" [ref=e61] [cursor=pointer]:
+              - /url: /login
+              - button "Sign in to Review" [ref=e62]
+          - generic [ref=e64]:
+            - generic [ref=e65]:
+              - generic [ref=e68]: ✓ Attended
+              - generic [ref=e71]:
+                - generic [ref=e72]:
+                  - generic [ref=e73]:
+                    - img [ref=e74]
+                    - img [ref=e76]
+                    - img [ref=e78]
+                    - img [ref=e80]
+                    - img [ref=e82]
+                  - generic [ref=e84]: Mar 8, 2026
+                - paragraph [ref=e85]: Chris Martinez
+              - generic [ref=e86]:
+                - paragraph [ref=e87]: A religious experience. Fitter Happier playing with the robotic voice and visual art was genius. The band was tight and Thom's falsetto was on point all night.
+                - generic [ref=e88]:
+                  - paragraph [ref=e89]: Setlist Highlights
+                  - generic [ref=e90]: Paranoid Android, Exit Music (For a Film), Lucky, Climbing Up the Walls
+            - generic [ref=e93]:
+              - generic [ref=e96]: ✓ Attended
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - generic [ref=e101]:
+                    - img [ref=e102]
+                    - img [ref=e104]
+                    - img [ref=e106]
+                    - img [ref=e108]
+                    - img [ref=e110]
+                  - generic [ref=e112]: Mar 8, 2026
+                - paragraph [ref=e113]: Alex Johnson
+              - generic [ref=e114]:
+                - paragraph [ref=e115]: Hearing OK Computer performed live in its entirety was a dream come true. Thom Yorke's vocals were hauntingly beautiful. Only wish the sound mix was a bit better in the back.
+                - generic [ref=e116]:
+                  - paragraph [ref=e117]: Setlist Highlights
+                  - generic [ref=e118]: Paranoid Android, Karma Police, No Surprises, Exit Music (For a Film)
+  - button "Open Next.js Dev Tools" [ref=e126] [cursor=pointer]:
+    - img [ref=e127]
+  - alert [ref=e130]
+```

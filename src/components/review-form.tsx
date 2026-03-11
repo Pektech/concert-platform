@@ -16,9 +16,9 @@ import {
 
 const reviewFormSchema = z.object({
   rating: z.number().min(1, "Rating is required").max(5, "Rating must be 5 or less"),
+  title: z.string().optional(),
   text: z.string().optional(),
   setlistHighlights: z.string().optional(),
-  attended: z.boolean().optional(),
 });
 
 type ReviewFormValues = z.infer<typeof reviewFormSchema>;
@@ -44,9 +44,9 @@ export function ReviewForm({
     resolver: zodResolver(reviewFormSchema),
     defaultValues: {
       rating: defaultValues?.rating ?? 0,
+      title: defaultValues?.title ?? "",
       text: defaultValues?.text ?? "",
       setlistHighlights: defaultValues?.setlistHighlights ?? "",
-      attended: defaultValues?.attended ?? false,
     },
   });
 
@@ -71,6 +71,26 @@ export function ReviewForm({
                   onChange={field.onChange}
                   size="lg"
                   disabled={isPending}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-purple-200">Review Title (optional)</FormLabel>
+              <FormControl>
+                <input
+                  {...field}
+                  type="text"
+                  placeholder="Give your review a headline..."
+                  disabled={isPending}
+                  className="flex w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
                 />
               </FormControl>
               <FormMessage />
@@ -113,28 +133,6 @@ export function ReviewForm({
                   className="flex min-h-[80px] w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-none"
                 />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="attended"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-              <FormControl>
-                <input
-                  type="checkbox"
-                  checked={field.value}
-                  onChange={field.onChange}
-                  disabled={isPending}
-                  className="w-5 h-5 rounded border-white/10 bg-white/5 text-purple-500 focus:ring-purple-500/50 focus:ring-offset-0 cursor-pointer"
-                />
-              </FormControl>
-              <FormLabel className="text-purple-200 font-normal cursor-pointer">
-                I attended this concert
-              </FormLabel>
               <FormMessage />
             </FormItem>
           )}

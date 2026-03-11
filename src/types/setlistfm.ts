@@ -21,11 +21,10 @@ export interface Artist {
 }
 
 export interface ArtistSearchResult {
-  artists: Artist[];
+  artist: Artist[]; // API returns "artist" (singular), not "artists"
   total: number;
   page: number;
-  perPage: number;
-  pages: number;
+  itemsPerPage: number; // API returns "itemsPerPage", not "perPage"
 }
 
 export interface Venue {

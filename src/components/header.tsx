@@ -71,13 +71,21 @@ export function Header() {
               </>
             ) : (
               <div className="flex items-center gap-2">
+                <Link href="/reviews/new">
+                  <Button
+                    size="sm"
+                    className="text-sm font-medium bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white border-0"
+                  >
+                    Write Review
+                  </Button>
+                </Link>
                 <Link href="/profile">
                   <Button
                     variant="ghost"
                     size="sm"
                     className="text-sm font-medium text-violet-600 hover:text-violet-700 hover:bg-violet-50"
                   >
-                    {session.user?.name || session.user?.email?.split("@")[0]}
+                    {session?.user?.name || session?.user?.email?.split("@")[0] || "Profile"}
                   </Button>
                 </Link>
                 <Button
@@ -101,8 +109,34 @@ export function Header() {
           >
             {mobileMenuOpen ? (
               <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
+) : (
+              <div className="flex items-center gap-2">
+                <Link href="/reviews/new">
+                  <Button
+                    size="sm"
+                    className="text-sm font-medium bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white border-0"
+                  >
+                    Write Review
+                  </Button>
+                </Link>
+                <Link href="/profile">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm font-medium text-violet-600 hover:text-violet-700 hover:bg-violet-50"
+                  >
+                    {session?.user?.name || session?.user?.email?.split("@")[0] || "Profile"}
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="text-sm"
+                >
+                  Logout
+                </Button>
+              </div>
             )}
           </Button>
         </div>
@@ -148,6 +182,13 @@ export function Header() {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-2">
+                    <Link href="/reviews/new" onClick={() => setMobileMenuOpen(false)}>
+                      <Button
+                        className="w-full justify-start text-sm font-medium bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white border-0"
+                      >
+                        Write Review
+                      </Button>
+                    </Link>
                     <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
                       <Button
                         variant="ghost"

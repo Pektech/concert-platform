@@ -3,7 +3,6 @@ import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { UserReviewsList } from "@/components/user-reviews-list";
 
@@ -40,7 +39,6 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
       reviews: {
         select: {
           id: true,
-          attended: true,
         },
       },
       concerts: {
@@ -56,7 +54,6 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
   }
 
   const reviewCount = user.reviews.length;
-  const attendedCount = user.reviews.filter((r) => r.attended).length;
   const concertsCount = user.concerts.length;
 
   const joinDate = new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -98,7 +95,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="grid grid-cols-3 gap-6 pt-4">
+            <div className="grid grid-cols-2 gap-6 pt-4">
               <StatCard
                 icon="🎵"
                 label="Reviews"
@@ -106,16 +103,10 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                 delay={0}
               />
               <StatCard
-                icon="🎫"
-                label="Attended"
-                value={attendedCount}
-                delay={100}
-              />
-              <StatCard
                 icon="🎸"
                 label="Concerts"
                 value={concertsCount}
-                delay={200}
+                delay={100}
               />
             </div>
           </CardContent>
@@ -139,16 +130,6 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                   </div>
                 </div>
                 <span className="text-3xl font-bold text-purple-400">{reviewCount}</span>
-              </div>
-              <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors duration-200">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">✅</span>
-                  <div>
-                    <p className="text-white font-semibold">Attended Concerts</p>
-                    <p className="text-gray-400 text-sm">Reviews marked as attended</p>
-                  </div>
-                </div>
-                <span className="text-3xl font-bold text-pink-400">{attendedCount}</span>
               </div>
               <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors duration-200">
                 <div className="flex items-center space-x-3">
@@ -212,62 +193,4 @@ export async function generateStaticParams() {
   return users.map((user) => ({
     id: user.id,
   }));
-}
-
-function ProfileSkeleton() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-6">
-      <div className="max-w-3xl mx-auto space-y-8">
-        <Skeleton className="h-6 w-32 bg-white/10" />
-
-        <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
-          <CardHeader>
-            <div className="flex items-center space-x-6">
-              <Skeleton className="w-24 h-24 rounded-full bg-white/10" />
-              <div className="space-y-3 flex-1">
-                <Skeleton className="h-10 w-64 bg-white/10" />
-                <div className="flex items-center space-x-3">
-                  <Skeleton className="h-6 w-20 bg-white/10" />
-                  <Skeleton className="h-4 w-40 bg-white/10" />
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-6 pt-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="text-center p-4">
-                  <Skeleton className="w-10 h-10 rounded-full mx-auto mb-2 bg-white/10" />
-                  <Skeleton className="h-8 w-16 mx-auto mb-1 bg-white/10" />
-                  <Skeleton className="h-4 w-20 mx-auto bg-white/10" />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
-          <CardHeader>
-            <Skeleton className="h-8 w-48 bg-white/10" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-white/5">
-                  <div className="flex items-center space-x-3">
-                    <Skeleton className="w-8 h-8 rounded bg-white/10" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-5 w-32 bg-white/10" />
-                      <Skeleton className="h-4 w-40 bg-white/10" />
-                    </div>
-                  </div>
-                  <Skeleton className="h-8 w-12 bg-white/10" />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
 }

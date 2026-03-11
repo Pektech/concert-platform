@@ -8,7 +8,6 @@ const reviewSchema = z.object({
   rating: z.number().min(1, "Rating must be at least 1").max(5, "Rating must be at most 5"),
   text: z.string().optional(),
   setlistHighlights: z.string().optional(),
-  attended: z.boolean().default(false),
   concertId: z.string(),
 })
 
@@ -26,7 +25,6 @@ export async function createReview(formData: FormData) {
       rating: Number(formData.get("rating")),
       text: formData.get("text") || undefined,
       setlistHighlights: formData.get("setlistHighlights") || undefined,
-      attended: formData.get("attended") === "on",
       concertId: formData.get("concertId"),
     })
 
@@ -36,17 +34,34 @@ export async function createReview(formData: FormData) {
       }
     }
 
-    const { rating, text, setlistHighlights, attended, concertId } = parsed.data
+    const { rating, text, setlistHighlights, concertId } = parsed.data
 
-    // Create the review
+    // Get concert details for cached fields
+    const concert = await prisma.concert.findUnique({
+      where: { id: concertId },
+      include: {
+        artist: true,
+        venue: true,
+      },
+    })
+
+    if (!concert) {
+      return { error: "Concert not found" }
+    }
+
+    // Create the review with cached concert data
     await prisma.review.create({
       data: {
         rating,
         text,
         setlistHighlights,
-        attended,
         userId: session.user.id,
         concertId,
+        // Cached concert data
+        artistName: concert.artist.name,
+        venue: concert.venue.name,
+        city: concert.venue.city,
+        concertDate: concert.date,
       },
     })
 

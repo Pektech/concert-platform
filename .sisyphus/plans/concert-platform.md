@@ -16,7 +16,7 @@
 > 
 > **Estimated Effort**: Medium (10-15 days for solo developer)
 > **Parallel Execution**: YES - 6 waves
-> **Critical Path**: Project setup → Database schema → Auth → Concert search → Review system → Profiles
+> **Critical Path**: Project setup → Database schema → Auth → Concert search → Review system → Profiles → Local testing → Deploy
 
 ---
 
@@ -151,13 +151,17 @@ Wave 5 (After Wave 4 — User Profiles + Browse):
 ├── Task 25: Concert-attached reviews list [visual-engineering]
 └── Task 26: Attended check-in functionality [quick]
 
-Wave 6 (After Wave 5 — Polish + Deploy):
+Wave 6 (After Wave 5 — Polish + Local Testing):
 ├── Task 27: Navigation + header component [visual-engineering]
 ├── Task 28: Search UI + autocomplete [visual-engineering]
 ├── Task 29: Error boundaries + loading states [quick]
 ├── Task 30: SEO metadata + OpenGraph [quick]
-├── Task 31: Vercel deployment config [quick]
-└── Task 32: Final QA + smoke tests [deep]
+├── Task 31: Local PostgreSQL setup + database seeding [quick]
+├── Task 32: Full end-to-end local testing [deep]
+├── Task 33: Environment validation script [quick]
+├── Task 34: Setlist.fm API integration testing [deep]
+├── Task 35: Vercel deployment config [quick]
+└── Task 36: Final QA + smoke tests [deep]
 
 Wave FINAL (After ALL tasks — Independent Review, 4 parallel):
 ├── Task F1: Plan compliance audit (oracle)
@@ -176,8 +180,8 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
 - **6-10**: 1, 2, 3, 5 — 11-26
 - **11-15**: 6, 9 — 16-26
 - **16-21**: 11-15 — 22-26
-- **22-26**: 16-21 — 27-32
-- **27-32**: 22-26 — F1-F4
+- **22-26**: 16-21 — 27-36
+- **27-36**: 22-26 — F1-F4
 
 ### Agent Dispatch Summary
 
@@ -186,7 +190,7 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
 - **Wave 3**: **5 tasks** — T12 `deep`, T13 `visual-engineering`, T11, T14, T15 `quick`
 - **Wave 4**: **6 tasks** — T17, T18, T20 `visual-engineering`, T16, T19, T21 `quick`
 - **Wave 5**: **5 tasks** — T22, T23, T24, T25 `visual-engineering`, T26 `quick`
-- **Wave 6**: **6 tasks** — T27, T28 `visual-engineering`, T29, T30, T31 `quick`, T32 `deep`
+- **Wave 6**: **10 tasks** — T27, T28 `visual-engineering`, T29, T30, T31, T33, T35 `quick`, T32, T34, T36 `deep`
 - **Wave FINAL**: **4 tasks** — F1 `oracle`, F2, F3 `unspecified-high`, F4 `deep`
 
 ---
@@ -2189,7 +2193,316 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
   - Files: `app/**/page.tsx (metadata exports), app/sitemap.ts`
   - Pre-commit: `bun run build`
 
-- [ ] 31. Vercel Deployment Configuration
+- [ ] 31. Local PostgreSQL Setup + Database Seeding
+
+  **What to do**:
+  - Install and configure PostgreSQL locally (Docker or native)
+  - Update .env.local with local database URL
+  - Run Prisma migrations locally: `bunx prisma migrate dev`
+  - Create seed script for test data (sample users, concerts, reviews)
+  - Verify local database connection works
+  - Document local setup process in README
+
+  **Must NOT do**:
+  - Do not use production database credentials
+  - Do not skip migration verification
+
+  **Recommended Agent Profile**:
+  - **Category**: `quick`
+    - Reason: Standard local database setup
+  - **Skills**: []
+    - PostgreSQL setup is well-documented
+
+  **Parallelization**:
+  - **Can Run In Parallel**: NO
+  - **Parallel Group**: Wave 6 (sequential prerequisite)
+  - **Blocks**: Tasks 32, 33, 34, 35 (all need working local DB)
+  - **Blocked By**: All previous tasks (need complete app)
+
+  **References**:
+  - PostgreSQL Docker: https://hub.docker.com/_/postgres
+  - Prisma migrations: https://www.prisma.io/docs/concepts/components/prisma-migrations
+
+  **Acceptance Criteria**:
+  - [ ] PostgreSQL running locally (Docker or native)
+  - [ ] .env.local configured with local DATABASE_URL
+  - [ ] `bunx prisma migrate dev` succeeds
+  - [ ] Seed script creates test data
+  - [ ] App connects to local database successfully
+
+  **QA Scenarios**:
+
+  ```
+  Scenario: Local PostgreSQL starts
+    Tool: Bash
+    Preconditions: Docker installed or PostgreSQL available
+    Steps:
+      1. Start PostgreSQL (docker run or service start)
+      2. Verify port 5432 accessible
+      3. Connect with psql or pgAdmin
+    Expected Result: PostgreSQL running and accessible
+    Failure Indicators: Port conflicts, connection errors
+    Evidence: .sisyphus/evidence/task-31-postgres-start.txt
+
+  Scenario: Prisma connects to local DB
+    Tool: Bash
+    Preconditions: PostgreSQL running, .env.local configured
+    Steps:
+      1. Run: bunx prisma migrate dev --name init
+      2. Verify tables created
+      3. Run: bunx prisma studio
+      4. Verify data browser loads
+    Expected Result: Prisma connects, migrations work, studio loads
+    Failure Indicators: Connection errors, migration failures
+    Evidence: .sisyphus/evidence/task-31-prisma-local.txt
+  ```
+
+  **Commit**: YES (grouped with 32-35)
+  - Message: `chore: local PostgreSQL setup and seeding`
+  - Files: `prisma/seed.ts, .env.local, README.md`
+  - Pre-commit: `bunx prisma migrate dev`
+
+- [ ] 32. Full End-to-End Local Testing
+
+  **What to do**:
+  - Run complete application locally with real PostgreSQL
+  - Test full user journey: signup → login → search concert → create review → view profile → browse
+  - Verify all features work with real database
+  - Test error scenarios (invalid credentials, network errors)
+  - Run full test suite against local database
+  - Fix any issues found before deployment
+
+  **Must NOT do**:
+  - Do not skip testing with real database (in-memory only is insufficient)
+  - Do not proceed to deployment if local tests fail
+
+  **Recommended Agent Profile**:
+  - **Category**: `deep`
+    - Reason: Comprehensive end-to-end testing with real database
+  - **Skills**: [`playwright`]
+    - `playwright`: E2E browser testing with real database
+
+  **Parallelization**:
+  - **Can Run In Parallel**: NO
+  - **Parallel Group**: Wave 6 (sequential after Task 31)
+  - **Blocks**: Tasks 33, 34, 35 (deployment requires passing local tests)
+  - **Blocked By**: Task 31 (needs local database)
+
+  **Acceptance Criteria**:
+  - [ ] All core features work end-to-end locally
+  - [ ] Authentication flows work with real database
+  - [ ] Concert search returns real data
+  - [ ] Reviews persist to database
+  - [ ] Profile pages show correct data
+  - [ ] Full test suite passes (`bun test`)
+
+  **QA Scenarios**:
+
+  ```
+  Scenario: Complete user journey works locally
+    Tool: Playwright
+    Preconditions: Local PostgreSQL running, dev server started
+    Steps:
+      1. Navigate to localhost:3000
+      2. Sign up new user
+      3. Login with credentials
+      4. Search for artist (e.g., "Radiohead")
+      5. Select concert from results
+      6. Create review with rating and text
+      7. Mark as attended
+      8. Visit profile page
+      9. Verify review appears on profile
+      10. Logout and verify session destroyed
+    Expected Result: Complete journey works without errors
+    Failure Indicators: Any step fails, database errors, session issues
+    Evidence: .sisyphus/evidence/task-32-local-journey.png
+
+  Scenario: Real database persistence
+    Tool: Playwright
+    Preconditions: User created review locally
+    Steps:
+      1. Restart dev server
+      2. Navigate to profile page
+      3. Verify review still exists
+      4. Check Prisma Studio - verify data persisted
+    Expected Result: Data persists across server restarts
+    Failure Indicators: Data lost, empty profiles
+    Evidence: .sisyphus/evidence/task-32-persistence.png
+  ```
+
+  **Commit**: YES (grouped with 31, 33-35)
+  - Message: `test: comprehensive local end-to-end testing`
+  - Files: `__tests__/e2e/local.test.tsx`
+  - Pre-commit: `bun test`
+
+- [ ] 33. Environment Validation Script
+
+  **What to do**:
+  - Create validation script that checks all required environment variables
+  - Verify database connection works
+  - Verify Setlist.fm API key works with actual API calls
+  - Verify NextAuth configuration is valid
+  - Add script to package.json: `validate-env`
+  - Run validation as part of pre-commit hook
+  - Include specific Setlist.fm API health check
+
+  **Must NOT do**:
+  - Do not expose sensitive validation logic publicly
+  - Do not skip validation in CI/CD
+  - Do not make excessive API calls during validation
+
+  **Recommended Agent Profile**:
+  - **Category**: `quick`
+    - Reason: Simple validation script with API integration
+  - **Skills**: []
+    - Environment validation with external API calls
+
+  **Parallelization**:
+  - **Can Run In Parallel**: YES
+  - **Parallel Group**: Wave 6 (with Tasks 34-35)
+  - **Blocks**: None (but should run before deployment)
+  - **Blocked By**: Task 11 (needs Setlist.fm API client)
+
+  **References**:
+  - Setlist.fm API docs: https://api.setlist.fm/docs/1.0/ - Health check endpoint
+  - Setlist.fm rate limits: https://api.setlist.fm/docs/1.0/#_rate_limiting
+
+  **Acceptance Criteria**:
+  - [ ] Validation script created at `scripts/validate-env.ts`
+  - [ ] Script checks all 4 required env vars
+  - [ ] Script tests database connection
+  - [ ] Script tests Setlist.fm API key with real search call
+  - [ ] Script includes rate limiting awareness (single test call)
+  - [ ] Script exits with code 0 on success, 1 on failure
+  - [ ] Added to package.json as `validate-env` script
+  - [ ] Added to package.json as `test:setlist` script for focused testing
+
+  **QA Scenarios**:
+
+  ```
+  Scenario: Validation script passes with good config
+    Tool: Bash
+    Preconditions: .env.local has all valid values
+    Steps:
+      1. Run: bun run validate-env
+      2. Verify exit code 0
+      3. Verify success message
+    Expected Result: Script passes, exit code 0
+    Failure Indicators: Script fails, wrong exit code
+    Evidence: .sisyphus/evidence/task-33-validate-good.txt
+
+  Scenario: Validation script fails with missing API key
+    Tool: Bash
+    Preconditions: .env.local has empty SETLIST_FM_API_KEY
+    Steps:
+      1. Run: bun run validate-env
+      2. Verify exit code 1
+      3. Verify error message about API key
+    Expected Result: Script fails gracefully, clear error message
+    Failure Indicators: Script crashes, vague error
+    Evidence: .sisyphus/evidence/task-33-validate-bad.txt
+
+  Scenario: Setlist.fm API test returns valid data
+    Tool: Bash
+    Preconditions: Valid API key configured
+    Steps:
+      1. Run: bun run test:setlist
+      2. Verify search for "Radiohead" returns concerts
+      3. Verify response contains expected fields (artist, venue, date)
+    Expected Result: API returns valid concert data
+    Failure Indicators: API errors, empty results, missing fields
+    Evidence: .sisyphus/evidence/task-33-setlist-test.json
+  ```
+
+  **Commit**: YES (grouped with 31-32, 34-35)
+  - Message: `chore: environment validation script with Setlist.fm API testing`
+  - Files: `scripts/validate-env.ts, scripts/test-setlist.ts, package.json`
+  - Pre-commit: `bun run validate-env`
+
+- [ ] 34. Setlist.fm API Integration Testing
+
+  **What to do**:
+  - Create comprehensive integration tests for Setlist.fm API
+  - Test all API endpoints: searchArtists, searchConcerts, getConcertById
+  - Verify caching behavior works correctly
+  - Test error handling for rate limits and invalid requests
+  - Test with real concert data (Radiohead, Metallica, etc.)
+  - Ensure proper retry logic for transient failures
+  - Add integration tests to test suite
+
+  **Must NOT do**:
+  - Do not make excessive API calls during testing
+  - Do not test with production Vercel deployment during local testing
+  - Do not skip mocking in unit tests (integration tests use real API)
+
+  **Recommended Agent Profile**:
+  - **Category**: `deep`
+    - Reason: Complex integration testing with external API
+  - **Skills**: []
+    - External API integration testing requires thorough validation
+
+  **Parallelization**:
+  - **Can Run In Parallel**: NO
+  - **Parallel Group**: Wave 6 (sequential after Task 12)
+  - **Blocks**: Task 35 (final QA needs this verified)
+  - **Blocked By**: Tasks 11, 12 (needs API client and caching)
+
+  **References**:
+  - Setlist.fm API documentation: https://api.setlist.fm/docs/1.0/
+  - Next.js testing best practices: https://nextjs.org/docs/app/building-your-application/testing
+
+  **Acceptance Criteria**:
+  - [ ] Integration tests cover all Setlist.fm API functions
+  - [ ] Tests verify successful responses with real data
+  - [ ] Tests verify error handling for invalid inputs
+  - [ ] Tests verify caching behavior (cache hits/misses)
+  - [ ] Tests include rate limiting awareness
+  - [ ] All integration tests pass consistently
+  - [ ] Added to test suite with `test:setlist:integration` script
+
+  **QA Scenarios**:
+
+  ```
+  Scenario: Integration test passes with real API
+    Tool: Bash
+    Preconditions: Valid API key, dev server not required
+    Steps:
+      1. Run: bun run test:setlist:integration
+      2. Verify all tests pass
+      3. Verify no rate limit errors
+    Expected Result: All integration tests pass
+    Failure Indicators: Test failures, API errors, rate limiting
+    Evidence: .sisyphus/evidence/task-34-setlist-integration.txt
+
+  Scenario: Caching works in integration tests
+    Tool: Bash
+    Preconditions: Integration tests include caching verification
+    Steps:
+      1. Run integration tests that test cache behavior
+      2. Verify first call takes longer, second call is faster
+      3. Verify cache invalidation works
+    Expected Result: Caching behavior validated in integration tests
+    Failure Indicators: No performance difference, cache not working
+    Evidence: .sisyphus/evidence/task-34-caching-integration.txt
+
+  Scenario: Error handling tested
+    Tool: Bash
+    Preconditions: Integration tests include error scenarios
+    Steps:
+      1. Run integration tests with invalid artist name
+      2. Verify proper error handling (not crash)
+      3. Verify user-friendly error messages
+    Expected Result: Graceful error handling verified
+    Failure Indicators: Unhandled exceptions, crashes
+    Evidence: .sisyphus/evidence/task-34-error-integration.txt
+  ```
+
+  **Commit**: YES (grouped with 31-33, 35-36)
+  - Message: `test: comprehensive Setlist.fm API integration tests`
+  - Files: `__tests__/integration/setlist.test.ts`
+  - Pre-commit: `bun run test:setlist:integration`
+
+- [ ] 35. Vercel Deployment Configuration
 
   **What to do**:
   - Create vercel.json if needed (custom config)
@@ -2232,7 +2545,7 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
       3. Note deployment URL
     Expected Result: Production deployment succeeds
     Failure Indicators: Build errors, deployment fails
-    Evidence: .sisyphus/evidence/task-31-deploy-success.txt
+    Evidence: .sisyphus/evidence/task-34-deploy-success.txt
 
   Scenario: Production site loads
     Tool: Playwright
@@ -2243,7 +2556,7 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
       3. Verify no console errors
     Expected Result: Production site functional
     Failure Indicators: 404, 500 errors, console errors
-    Evidence: .sisyphus/evidence/task-31-prod-load.png
+    Evidence: .sisyphus/evidence/task-34-prod-load.png
   ```
 
   **Commit**: YES (grouped with 27-30, 32)
@@ -2251,7 +2564,7 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
   - Files: `vercel.json, .env.production`
   - Pre-commit: None
 
-- [ ] 32. Final QA + Smoke Tests
+- [ ] 35. Final QA + Smoke Tests
 
   **What to do**:
   - Create smoke test suite (critical path tests)
@@ -2297,7 +2610,7 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
       6. Logout
     Expected Result: Complete journey works without errors
     Failure Indicators: Any step fails, errors encountered
-    Evidence: .sisyphus/evidence/task-32-full-journey.png
+    Evidence: .sisyphus/evidence/task-35-full-journey.png
 
   Scenario: All tests pass
     Tool: Bash
@@ -2307,10 +2620,10 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
       2. Verify 0 failures
     Expected Result: All tests pass
     Failure Indicators: Test failures
-    Evidence: .sisyphus/evidence/task-32-tests-pass.txt
+    Evidence: .sisyphus/evidence/task-35-tests-pass.txt
   ```
 
-  **Commit**: YES (grouped with 27-31)
+  **Commit**: YES (grouped with 27-35)
   - Message: `test: smoke tests and final QA`
   - Files: `__tests__/smoke.test.tsx`
   - Pre-commit: `bun test`
@@ -2344,7 +2657,7 @@ Max Concurrent: 5 (Wave 1, 4, 5, 6)
 - **Wave 3**: Group commits 11-15 → `feat: Setlist.fm API integration with caching`
 - **Wave 4**: Group commits 16-21 → `feat: concert review CRUD system`
 - **Wave 5**: Group commits 22-26 → `feat: user profiles and browse pages`
-- **Wave 6**: Group commits 27-32 → `chore: navigation, SEO, deployment`
+- **Wave 6**: Group commits 27-36 → `chore: navigation, SEO, local testing, deployment`
 
 ---
 

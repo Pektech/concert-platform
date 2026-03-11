@@ -2,6 +2,7 @@
 
 import { signIn } from "@/lib/auth"
 import { AuthError } from "next-auth"
+import { isRedirectError } from "next/dist/client/components/redirect-error"
 import { z } from "zod"
 
 const loginSchema = z.object({
@@ -30,6 +31,11 @@ export async function login(formData: FormData) {
 
     return { success: true }
   } catch (error) {
+    // Re-throw redirect errors so Next.js can handle the navigation
+    if (isRedirectError(error)) {
+      throw error
+    }
+
     if (error instanceof AuthError) {
       return {
         error: "Invalid credentials",

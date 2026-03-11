@@ -24,9 +24,9 @@ export async function getReviewsByConcertId(concertId: string) {
       data: reviews.map((review) => ({
         id: review.id,
         rating: review.rating,
+        title: review.title,
         text: review.text,
         setlistHighlights: review.setlistHighlights,
-        attended: review.attended,
         createdAt: review.createdAt.toISOString(),
         user: {
           id: review.user.id,

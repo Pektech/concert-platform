@@ -7,13 +7,19 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { AutocompleteResult } from "@/app/api/concerts/autocomplete/route";
+import {
+  filterAndSortResults,
+  hasDirectMatch,
+  type FilteredResult,
+} from "@/lib/artist-filter";
 
 export function SearchAutocomplete() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<AutocompleteResult[]>([]);
+  const [results, setResults] = useState<FilteredResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [showSearchAnyway, setShowSearchAnyway] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -21,6 +27,7 @@ export function SearchAutocomplete() {
     if (!searchQuery.trim()) {
       setResults([]);
       setIsOpen(false);
+      setShowSearchAnyway(false);
       return;
     }
 
@@ -28,11 +35,16 @@ export function SearchAutocomplete() {
     try {
       const response = await fetch(`/api/concerts/autocomplete?q=${encodeURIComponent(searchQuery)}`);
       const data = await response.json();
-      setResults(data.results || []);
+      const rawResults: AutocompleteResult[] = data.results || [];
+
+      const filteredResults = filterAndSortResults(rawResults, searchQuery);
+      setResults(filteredResults);
+      setShowSearchAnyway(rawResults.length > 0 && !hasDirectMatch(rawResults, searchQuery));
       setIsOpen(true);
     } catch (error) {
       console.error("Search error:", error);
       setResults([]);
+      setShowSearchAnyway(false);
     } finally {
       setIsLoading(false);
     }
@@ -45,8 +57,9 @@ export function SearchAutocomplete() {
       } else {
         setResults([]);
         setIsOpen(false);
+        setShowSearchAnyway(false);
       }
-    }, 250);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [query, search]);
@@ -181,6 +194,19 @@ export function SearchAutocomplete() {
                     <span className="text-xs font-semibold uppercase tracking-wider text-primary/70">
                       {result.type === "artist" ? "Artist" : "Concert"}
                     </span>
+                    {result.isVerified && (
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Verified
+                      </span>
+                    )}
+                    {result.isFuzzyMatch && !result.isVerified && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                        Close match
+                      </span>
+                    )}
                   </div>
                   <h3 className="font-semibold text-base text-foreground group-hover:text-primary transition-colors truncate">
                     {result.name}
@@ -205,6 +231,31 @@ export function SearchAutocomplete() {
                 </svg>
               </Link>
             ))}
+
+            {showSearchAnyway && (
+              <Link
+                href={`/concerts/search?artist=${encodeURIComponent(query)}`}
+                onClick={handleSelect}
+                className="group flex items-center justify-center gap-2 p-4 hover:bg-muted/50 transition-colors border-t border-border/50"
+              >
+                <svg
+                  className="w-4 h-4 text-muted-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">
+                  Add &quot;{query}&quot; as is
+                </span>
+              </Link>
+            )}
           </div>
 
           {results.length > 0 && (

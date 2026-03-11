@@ -72,9 +72,9 @@ export default function ConcertReviewFormPage({ params }: ConcertReviewFormPageP
               error={error}
               defaultValues={{
                 rating: 0,
+                title: "",
                 text: "",
                 setlistHighlights: "",
-                attended: false,
               }}
             />
           </CardContent>

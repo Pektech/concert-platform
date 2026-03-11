@@ -11,9 +11,9 @@ interface EditReviewPageProps {
   review: {
     id: string;
     rating: number;
+    title: string | null;
     text: string | null;
     setlistHighlights: string | null;
-    attended: boolean;
     concertId: string;
   };
 }
@@ -23,7 +23,7 @@ export default function EditReviewPage({ review }: EditReviewPageProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(values: { rating: number; text?: string; setlistHighlights?: string; attended?: boolean }) {
+  async function onSubmit(values: { rating: number; title?: string; text?: string; setlistHighlights?: string }) {
     startTransition(async () => {
       setError(null);
 
@@ -31,9 +31,9 @@ export default function EditReviewPage({ review }: EditReviewPageProps) {
         const formData = new FormData();
         formData.set("id", review.id);
         formData.set("rating", values.rating.toString());
+        formData.set("title", values.title ?? "");
         formData.set("text", values.text ?? "");
         formData.set("setlistHighlights", values.setlistHighlights ?? "");
-        formData.set("attended", values.attended ? "on" : "off");
 
         const result = await updateReview(formData);
 
@@ -72,9 +72,9 @@ export default function EditReviewPage({ review }: EditReviewPageProps) {
         <ReviewForm
           defaultValues={{
             rating: review.rating,
+            title: review.title ?? "",
             text: review.text ?? "",
             setlistHighlights: review.setlistHighlights ?? "",
-            attended: review.attended,
           }}
           onSubmit={onSubmit}
           submitLabel="Update Review"

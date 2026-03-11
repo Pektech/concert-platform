@@ -3,8 +3,7 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { auth as getServerSession } from "@/lib/auth";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StarRating } from "@/components/star-rating";
@@ -24,9 +23,9 @@ const REVIEWS_PER_PAGE = 20;
 interface ReviewWithRelations {
   id: string;
   rating: number;
+  title: string | null;
   text: string | null;
   setlistHighlights: string | null;
-  attended: boolean;
   createdAt: Date;
   user: {
     id: string;
@@ -166,11 +165,6 @@ function ReviewCard({ review, index }: { review: ReviewWithRelations; index: num
             <div className="flex-1 min-w-0 space-y-2">
               <div className="flex items-center gap-3 flex-wrap">
                 <StarRating rating={review.rating} size="sm" />
-                {review.attended && (
-                  <Badge className="bg-emerald-500/90 text-emerald-950 hover:bg-emerald-500/90 font-semibold text-xs shadow-sm">
-                    ✓ Attended
-                  </Badge>
-                )}
               </div>
 
               <div className="flex items-center gap-2 text-sm">

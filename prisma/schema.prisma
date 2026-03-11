@@ -58,16 +58,43 @@ model Concert {
   users       User[]   @relation("UserConcerts")
 }
 
+/// Letterboxd-style review with cached concert data for fast reads
 model Review {
   id                String   @id @default(cuid())
   userId            String
   concertId         String
-  rating            Int
-  text              String?
-  setlistHighlights String?
-  attended          Boolean  @default(false)
+  rating            Int      // 1-5 stars
+  title             String?  // Optional review headline
+  text              String?  // Main review content (Markdown supported)
+  setlistHighlights String?  // Memorable songs from the show
+
+  // Cached/denormalized concert data for fast queries without joins
+  artistName        String   @default("Unknown Artist")
+  venue             String   @default("Unknown Venue")
+  city              String?
+  concertDate       DateTime @default(now())
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
   concert           Concert  @relation(fields: [concertId], references: [id])
   user              User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([concertId])
+  @@index([artistName])
+  @@index([concertDate])
+}
+
+/// API response cache for Setlist.fm and other external APIs
+model ApiCache {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+  @@index([expiresAt])
 }
