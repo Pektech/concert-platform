@@ -19,10 +19,15 @@ const createReviewSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  console.log("=== REVIEW API CALLED ===");
+  console.log("Request headers:", Object.fromEntries(request.headers));
+  
   try {
     const session = await auth();
+    console.log("Session result:", session ? { userId: session.user?.id, hasSession: true } : { hasSession: false });
 
     if (!session?.user?.id) {
+      console.log("Unauthorized - no session");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
