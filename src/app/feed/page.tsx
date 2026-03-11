@@ -53,6 +53,7 @@ export default async function FeedPage() {
         select: {
           id: true,
         },
+        take: 1, // Only need to know if user liked, not all likes
       },
     },
     orderBy: {

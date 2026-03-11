@@ -34,7 +34,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
     notFound()
   }
 
-  // Get all followers with their follow timestamps
+  // Get followers with pagination (limit to 100 for performance)
   const followers = await prisma.follow.findMany({
     where: { followingId: id },
     include: {
@@ -54,6 +54,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
     orderBy: {
       createdAt: 'desc',
     },
+    take: 100, // Limit for performance
   })
 
   const isOwnProfile = currentUserId === id

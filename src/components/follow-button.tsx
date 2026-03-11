@@ -4,6 +4,7 @@ import { useState, useOptimistic } from "react"
 import { UserPlus, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 interface FollowButtonProps {
   userId: string
@@ -59,6 +60,7 @@ export function FollowButton({
       onFollowToggle?.(data.following)
     } catch (error) {
       console.error("Follow toggle failed:", error)
+      toast.error("Failed to update follow. Please try again.")
     } finally {
       setIsPending(false)
     }

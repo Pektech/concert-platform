@@ -52,7 +52,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         },
       })
       
-      return NextResponse.json({ following: false })
+      // Get updated counts
+      const [followersCount, followingCount] = await Promise.all([
+        prisma.follow.count({ where: { followingId } }),
+        prisma.follow.count({ where: { followerId } }),
+      ])
+      
+      return NextResponse.json({ 
+        following: false,
+        followersCount,
+        followingCount,
+      })
     } else {
       // Follow - create the record
       await prisma.follow.create({
@@ -62,7 +72,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         },
       })
       
-      return NextResponse.json({ following: true }, { status: 201 })
+      // Get updated counts
+      const [followersCount, followingCount] = await Promise.all([
+        prisma.follow.count({ where: { followingId } }),
+        prisma.follow.count({ where: { followerId } }),
+      ])
+      
+      return NextResponse.json({ 
+        following: true,
+        followersCount,
+        followingCount,
+      }, { status: 201 })
     }
   } catch (error) {
     console.error("Toggle follow error:", error)

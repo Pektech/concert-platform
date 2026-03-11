@@ -4,6 +4,7 @@ import { useState, useOptimistic } from "react"
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 interface LikeButtonProps {
   reviewId: string
@@ -65,6 +66,7 @@ export function LikeButton({
       }
     } catch (error) {
       console.error("Like toggle failed:", error)
+      toast.error("Failed to update like. Please try again.")
     } finally {
       setIsPending(false)
     }
