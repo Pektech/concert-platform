@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { StarRating } from "@/components/star-rating"
+import { LikeButton } from "@/components/like-button"
 import { Pencil, Trash2 } from "lucide-react"
 
 interface Review {
@@ -15,8 +16,10 @@ interface Review {
   createdAt: string
   user: {
     id: string
-    name: string | null
+    displayName: string | null
   }
+  likeCount?: number
+  isLikedByUser?: boolean
 }
 
 interface ReviewCardProps {
@@ -56,7 +59,7 @@ export function ReviewCard({ review, currentUserId, onEdit, onDelete }: ReviewCa
               </p>
             )}
             <p className="text-sm font-semibold text-foreground truncate">
-              {review.user.name || "Anonymous"}
+              {review.user.displayName || "Anonymous"}
             </p>
           </div>
 
@@ -106,8 +109,18 @@ export function ReviewCard({ review, currentUserId, onEdit, onDelete }: ReviewCa
         )}
       </CardContent>
 
-      <CardFooter className="pt-0">
-        <div className="w-full h-px bg-gradient-to-r from-primary/20 via-primary/10 to-transparent" />
+      <CardFooter className="pt-2 pb-3">
+        <div className="w-full flex items-center justify-between">
+          <LikeButton
+            reviewId={review.id}
+            initialLiked={review.isLikedByUser ?? false}
+            initialCount={review.likeCount ?? 0}
+            currentUserId={currentUserId}
+          />
+          <span className="text-xs text-muted-foreground">
+            {formatDate(review.createdAt)}
+          </span>
+        </div>
       </CardFooter>
     </Card>
   )

@@ -270,7 +270,7 @@ async function main() {
       rating: 5,
       text: "Absolutely incredible! Three and a half hours of pure magic. Taylor performed songs from every era and the production was stunning. The crowd energy was electric and I'm still not over the 10-minute version of All Too Well.",
       setlistHighlights: "All Too Well (10 Minute Version), Enchanted, You're On Your Own Kid",
-      attended: true,
+      
     },
     {
       userId: users[0].id,
@@ -278,7 +278,7 @@ async function main() {
       rating: 5,
       text: "Kendrick is a phenomenal performer. The stage design was unlike anything I've seen - that giant puppet walking across the stage was wild. He played all the hits and the energy never dropped.",
       setlistHighlights: "HUMBLE., Alright, MONEY TREES, Sing About Me, I'm Dying of Thirst",
-      attended: true,
+      
     },
     {
       userId: users[0].id,
@@ -286,7 +286,7 @@ async function main() {
       rating: 4,
       text: "Hearing OK Computer performed live in its entirety was a dream come true. Thom Yorke's vocals were hauntingly beautiful. Only wish the sound mix was a bit better in the back.",
       setlistHighlights: "Paranoid Android, Karma Police, No Surprises, Exit Music (For a Film)",
-      attended: true,
+      
     },
 
     // Sarah Chen's reviews (4 reviews)
@@ -296,7 +296,7 @@ async function main() {
       rating: 5,
       text: "Red Rocks at sunset with Radiohead playing - does it get any better? The strings section added so much depth to the newer songs. Daydreaming gave me chills.",
       setlistHighlights: "Daydreaming, Burn the Witch, Weird Fishes/Arpeggi, Idioteque",
-      attended: true,
+      
     },
     {
       userId: users[1].id,
@@ -304,7 +304,7 @@ async function main() {
       rating: 4,
       text: "Such a nostalgic show! Hearing The Chain and Go Your Own Way live was everything. Stevie Nicks still has that magical stage presence. Mike Campbell filled in well on guitar.",
       setlistHighlights: "The Chain, Dreams, Go Your Own Way, Landslide",
-      attended: true,
+      
     },
     {
       userId: users[1].id,
@@ -312,7 +312,7 @@ async function main() {
       rating: 5,
       text: "A transcendent experience! The pyramid light show combined with Get Lucky and One More Time had the entire arena dancing. They even played Digital Love which made my year.",
       setlistHighlights: "Get Lucky, One More Time, Digital Love, Harder Better Faster Stronger",
-      attended: true,
+      
     },
     {
       userId: users[1].id,
@@ -320,7 +320,7 @@ async function main() {
       rating: 4,
       text: "Intimate venue, great acoustics. Taylor played the entire Midnights album plus a few surprise songs. Anti-Hero live was everything I hoped for. Wished it was a bit longer though.",
       setlistHighlights: "Anti-Hero, Mastermind, Lavender Haze, Midnight Rain",
-      attended: true,
+      
     },
 
     // Mike Wilson's reviews (2 reviews)
@@ -330,7 +330,7 @@ async function main() {
       rating: 5,
       text: "Hearing good kid, m.A.A.d city front to back was life-changing. Sing About Me, I'm Dying of Thirst hit different in person. The storytelling throughout was incredible.",
       setlistHighlights: "Sing About Me, I'm Dying of Thirst, Swimming Pools (Drank), Bitch, Don't Kill My Vibe",
-      attended: true,
+      
     },
     {
       userId: users[2].id,
@@ -338,7 +338,7 @@ async function main() {
       rating: 4,
       text: "Went with my daughter and she was over the moon. I was surprised by how much I enjoyed it - Taylor puts on a real show. 3+ hours is a commitment but worth it.",
       setlistHighlights: "Shake It Off, Blank Space, Love Story, We Are Never Ever Getting Back Together",
-      attended: true,
+      
     },
 
     // Emma Davis's reviews (1 review)
@@ -348,7 +348,7 @@ async function main() {
       rating: 5,
       text: "My 15th Radiohead show and somehow they still blow me away every time. Red Rocks is the perfect venue for their sound. Everything in Its Right Place as the closer was perfection.",
       setlistHighlights: "Everything in Its Right Place, Street Spirit (Fade Out), Climbing Up the Walls",
-      attended: true,
+      
     },
 
     // Chris Martinez's reviews (3 reviews)
@@ -358,7 +358,7 @@ async function main() {
       rating: 5,
       text: "The helmet reveal during One More Time had me tearing up. Daft Punk knows how to create a moment. The production value was insane - worth every penny.",
       setlistHighlights: "One More Time, Aerodynamic, Face to Face, Too Long",
-      attended: true,
+      
     },
     {
       userId: users[4].id,
@@ -366,7 +366,7 @@ async function main() {
       rating: 3,
       text: "Decent show but definitely felt the absence of some original members. Stevie and Mick carried the energy. Good for nostalgia but not the full Fleetwood Mac experience.",
       setlistHighlights: "Dreams, Rhiannon, Go Your Own Way",
-      attended: true,
+      
     },
     {
       userId: users[4].id,
@@ -374,7 +374,7 @@ async function main() {
       rating: 5,
       text: "A religious experience. Fitter Happier playing with the robotic voice and visual art was genius. The band was tight and Thom's falsetto was on point all night.",
       setlistHighlights: "Paranoid Android, Exit Music (For a Film), Lucky, Climbing Up the Walls",
-      attended: true,
+      
     },
   ];
 
