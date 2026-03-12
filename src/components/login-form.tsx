@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { login } from "@/actions/login"
+import { useSession } from "@/components/auth-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -33,6 +34,7 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
   const router = useRouter()
+  const { update } = useSession()
   const [isPending, setIsPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -58,7 +60,10 @@ export function LoginForm() {
       if (result?.error) {
         setError(result.error)
       } else {
-        router.refresh()
+        // Update session to ensure client-side state is in sync
+        await update()
+        // Small delay to ensure session propagates
+        await new Promise(resolve => setTimeout(resolve, 100))
         router.push("/")
       }
     } catch {
