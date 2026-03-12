@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useOptimistic } from "react"
+import { useState, useOptimistic, startTransition } from "react"
 import { UserPlus, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -45,14 +45,18 @@ export function FollowButton({
 
   const handleToggle = async () => {
     const newFollowing = !optimisticFollowing
-    setOptimisticFollowing(newFollowing)
+    startTransition(() => {
+      setOptimisticFollowing(newFollowing)
+    })
     setIsPending(true)
 
     try {
       const response = await fetch(`/api/users/${userId}/follow`, { method: "POST" })
 
       if (!response.ok) {
-        setOptimisticFollowing(!newFollowing)
+        startTransition(() => {
+          setOptimisticFollowing(!newFollowing)
+        })
         throw new Error("Failed to toggle follow")
       }
 

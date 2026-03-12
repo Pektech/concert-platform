@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useOptimistic } from "react"
+import { useState, useOptimistic, startTransition } from "react"
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -54,14 +54,18 @@ export function LikeButton({
 
   const handleToggle = async () => {
     const newLiked = !optimisticState.liked
-    setOptimisticState(newLiked)
+    startTransition(() => {
+      setOptimisticState(newLiked)
+    })
     setIsPending(true)
 
     try {
       const response = await fetch(`/api/reviews/${reviewId}/like`, { method: "POST" })
       if (!response.ok) {
         // Rollback on failure
-        setOptimisticState(!newLiked)
+        startTransition(() => {
+          setOptimisticState(!newLiked)
+        })
         throw new Error("Failed to toggle like")
       }
     } catch (error) {
