@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useOptimistic, startTransition } from "react"
+import { useState } from "react"
 import { UserPlus, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -25,12 +25,8 @@ export function FollowButton({
   size = "default",
   variant = "default"
 }: FollowButtonProps) {
+  const [isFollowing, setIsFollowing] = useState(initialFollowing)
   const [isPending, setIsPending] = useState(false)
-  
-  const [optimisticFollowing, setOptimisticFollowing] = useOptimistic(
-    initialFollowing,
-    (_, newFollowing: boolean) => newFollowing
-  )
 
   if (isOwnProfile) return null
 
@@ -44,23 +40,17 @@ export function FollowButton({
   }
 
   const handleToggle = async () => {
-    const newFollowing = !optimisticFollowing
-    startTransition(() => {
-      setOptimisticFollowing(newFollowing)
-    })
     setIsPending(true)
 
     try {
       const response = await fetch(`/api/users/${userId}/follow`, { method: "POST" })
 
       if (!response.ok) {
-        startTransition(() => {
-          setOptimisticFollowing(!newFollowing)
-        })
         throw new Error("Failed to toggle follow")
       }
 
       const data = await response.json()
+      setIsFollowing(data.following)
       onFollowToggle?.(data.following)
     } catch (error) {
       console.error("Follow toggle failed:", error)
@@ -72,16 +62,16 @@ export function FollowButton({
 
   return (
     <Button
-      variant={optimisticFollowing ? "secondary" : variant}
+      variant={isFollowing ? "secondary" : variant}
       size={size}
       onClick={handleToggle}
       disabled={isPending}
       className={cn(
         "gap-1.5 min-w-[100px]",
-        optimisticFollowing && "group hover:bg-rose-500/10 hover:text-rose-500"
+        isFollowing && "group hover:bg-rose-500/10 hover:text-rose-500"
       )}
     >
-      {optimisticFollowing ? (
+      {isFollowing ? (
         <>
           <UserCheck className="w-4 h-4" />
           <span className="group-hover:hidden">Following</span>
