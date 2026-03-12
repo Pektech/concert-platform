@@ -87,15 +87,15 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
       <div className="max-w-3xl mx-auto space-y-8">
         <Link
           href="/"
-          className={`inline-flex items-center ${styles['neon-80s']} cyan transition-colors duration-200`}
+          className={`inline-flex items-center ${styles['neon-80s']} cyan transition-colors duration-200 hover:opacity-80 group`}
         >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
           Back to Home
         </Link>
 
-        <Card className={`${styles['neon-border']} purple bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden`}>
+        <Card className={`${styles['neon-border']} pink bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden`}>
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10" />
           <CardHeader className="relative">
             <div className="flex items-center space-x-6">
@@ -146,9 +146,9 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           </CardContent>
         </Card>
 
-        <Card className={`${styles['neon-border']} cyan bg-white/5 border-white/10 backdrop-blur-xl`}>
+        <Card className={`${styles['neon-border']} purple bg-white/5 border-white/10 backdrop-blur-xl`}>
           <CardHeader>
-            <h2 className={`text-2xl font-bold text-white flex items-center ${styles['neon-80s']} yellow`}>
+            <h2 className={`text-2xl font-bold text-white flex items-center ${styles['neon-80s']} cyan`}>
               <span className="text-3xl mr-3">📊</span>
               Profile Statistics
             </h2>
@@ -179,7 +179,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           </CardContent>
         </Card>
 
-        <UserReviewsList userId={user.id} />
+        <UserReviewsList userId={user.id} variant="retro" />
 
         {reviewCount === 0 && concertsCount === 0 && (
           <Card className={`${styles['neon-border']} green bg-white/5 border-white/10 backdrop-blur-xl`}>
@@ -209,12 +209,12 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
 function StatCard({ icon, label, value, delay }: { icon: string; label: string; value: number; delay: number }) {
   return (
     <div
-      className={`${styles['neon-border']} cyan text-center p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300`}
+      className={`group/stat ${styles['neon-border']} cyan text-center p-4 rounded-lg bg-white/5 transition-all duration-300 hover:bg-white/15 hover:shadow-lg hover:shadow-cyan-500/30 cursor-default`}
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="text-4xl mb-2">{icon}</div>
-      <div className={`text-3xl font-bold ${styles['neon-80s']} yellow mb-1`}>{value}</div>
-      <div className="text-gray-400 text-sm">{label}</div>
+      <div className="text-4xl mb-2 group-hover/stat:scale-110 transition-transform duration-300">{icon}</div>
+      <div className={`text-3xl font-bold ${styles['neon-80s']} green mb-1 group-hover/stat:scale-105 transition-transform duration-300`}>{value}</div>
+      <div className="text-gray-400 text-sm group-hover/stat:text-gray-300 transition-colors duration-300">{label}</div>
     </div>
   );
 }

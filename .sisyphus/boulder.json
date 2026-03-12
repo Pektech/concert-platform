@@ -1,12 +1,10 @@
 {
-  "active_plan": "/media/richard-leddy/extra/marcus/.sisyphus/plans/concert-platform.md",
-  "started_at": "2026-03-08T01:40:16.905Z",
+  "active_plan": "/media/richard-leddy/extra/marcus/.sisyphus/plans/80s-profile-retro.md",
+  "started_at": "2026-03-12T23:38:06.206Z",
   "session_ids": [
-    "ses_334e5d0b2ffetx9yu6EDMUnJ7a",
-    "ses_3319eafbdffeCzDmt38DSimbP2",
-    "ses_32af8bd51ffeYt1OF0oSQWyz4c"
+    "ses_320c33cd8ffeN32sUMvWG7fAs0"
   ],
-  "plan_name": "concert-platform",
+  "plan_name": "80s-profile-retro",
   "agent": "atlas",
   "worktree_path": "/media/richard-leddy/extra/marcus"
 }

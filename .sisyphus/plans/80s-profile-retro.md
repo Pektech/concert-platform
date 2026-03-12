@@ -125,7 +125,7 @@ Create a new 80s synthwave/retro-styled profile page that captures the essence o
     Evidence: .sisyphus/evidence/task-2-functionality-check.txt
   ```
 
-- [ ] 3. Create retro profile page component
+- [x] 3. Create retro profile page component
 
   **What to do**:
   - Create new file: src/app/profile/[id]/retro/page.tsx
@@ -185,150 +185,10 @@ Create a new 80s synthwave/retro-styled profile page that captures the essence o
 
   **Commit**: NO (group with Task 4)
 
-- [ ] 4. Integrate user stats section with 80s styling
-
-  **What to do**:
-  - Update stat cards in retro page to use 80s digital readout aesthetic
-  - Apply .neon-border class to stat card containers
-  - Use neon-pink/cyan/green colors for stat values
-  - Add glow effects that pulse on hover
-  - Maintain all stat calculations and data display
-  - Preserve navigation links to followers/following
-  
-  **Must NOT do**:
-  - Do NOT change what stats are displayed
-  - Do NOT modify stat calculation logic
-  - Do NOT alter navigation destinations
-
-  **Recommended Agent Profile**:
-  - **Category**: `visual-engineering`
-  - **Skills**: [`playwright`]
-
-  **Parallelization**:
-  - **Can Run In Parallel**: NO
-  - **Blocked By**: Task 3 (needs base page structure)
-
-  **References**:
-  - `src/app/profile/[id]/page.tsx:stat section` - Original stat display
-  - `src/styles/80s-profile.module.css` - Styling classes
-  - `.sisyphus/drafts/retro-stat-section-plan.md` - Detailed plan
-
-  **Acceptance Criteria**:
-  - [ ] Stat cards use 80s styling classes
-  - [ ] Neon glow effects applied
-  - [ ] Stat values display correctly
-  - [ ] Hover effects work
-  - [ ] Navigation links functional
-
-  **QA Scenarios**:
-  ```
-  Scenario 1: Stats display with retro styling
-    Tool: Read file + visual inspection
-    Steps:
-      1. Verify neon classes applied to stat cards
-      2. Check stat values render correctly
-    Evidence: .sisyphus/evidence/task-4-stats-styled.png
-  ```
-
-  **Commit**: YES (with Task 3)
-  - Message: `feat(profile): add 80s retro styled profile page`
-
-- [ ] 5. Add background effects and decorations
-
-  **What to do**:
-  - Implement animated background grid with perspective lines
-  - Add subtle neon particle effects
-  - Apply .retro-grid-bg class from CSS module
-  - Add scanline overlay effect
-  - Ensure effects don't interfere with content readability
-  - Optimize for performance (use CSS containment)
-  
-  **Must NOT do**:
-  - Do NOT significantly impact page performance
-  - Do NOT interfere with main content visibility
-  - Do NOT add complex WebGL/heavy animations
-
-  **Recommended Agent Profile**:
-  - **Category**: `visual-engineering`
-  - **Skills**: [`playwright`]
-
-  **Parallelization**:
-  - **Can Run In Parallel**: NO
-  - **Blocked By**: Task 3 (needs page structure)
-
-  **References**:
-  - `src/styles/80s-profile.module.css` - Background patterns
-  - `.sisyphus/drafts/background-effects-plan.md` - Detailed plan
-  - `src/app/concerts/[id]/page.tsx:265` - Current background pattern
-
-  **Acceptance Criteria**:
-  - [ ] Background grid pattern applied
-  - [ ] Animations running smoothly
-  - [ ] Content remains readable
-  - [ ] Performance acceptable
-
-  **QA Scenarios**:
-  ```
-  Scenario 1: Background renders without performance issues
-    Tool: Playwright + performance check
-    Steps:
-      1. Measure page load time
-      2. Check for frame drops
-      3. Verify grid background visible
-    Evidence: .sisyphus/evidence/task-5-background.png
-  ```
-
-  **Commit**: NO (part of Task 6)
-
-- [ ] 6. Update review listings with retro styling
-
-  **What to do**:
-  - Style review cards with 80s aesthetic
-  - Apply neon glow effects to review card borders
-  - Implement synthwave-style star ratings
-  - Use laser-yellow for author names
-  - Enhance date/metadata styling with retro touch
-  - Maintain all review data and functionality
-  
-  **Must NOT do**:
-  - Do NOT modify review display logic
-  - Do NOT change review data structure
-  - Do NOT remove any review information
-
-  **Recommended Agent Profile**:
-  - **Category**: `visual-engineering`
-  - **Skills**: [`playwright`]
-
-  **Parallelization**:
-  - **Can Run In Parallel**: NO
-  - **Blocked By**: Task 3 (needs page structure)
-
-  **References**:
-  - `src/app/profile/[id]/page.tsx:review section` - Original review display
-  - `src/components/review-card.tsx` - Review card component
-  - `src/styles/80s-profile.module.css` - Styling classes
-  - `.sisyphus/drafts/retro-review-section-plan.md` - Detailed plan
-
-  **Acceptance Criteria**:
-  - [ ] Review cards styled with 80s aesthetic
-  - [ ] Star ratings have neon effects
-  - [ ] Review data displays correctly
-  - [ ] All review functionality preserved
-
-  **QA Scenarios**:
-  ```
-  Scenario 1: Reviews display with retro styling
-    Tool: Read file + verification
-    Steps:
-      1. Verify neon classes applied to review cards
-      2. Check review data renders correctly
-      3. Verify star ratings styled
-    Evidence: .sisyphus/evidence/task-6-reviews-styled.png
-  ```
-
-  **Commit**: NO (part of Task 7)
-
-- [ ] 7. Implement responsive compatibility
+- [x] 4. Integrate user stats section with 80s styling
+- [x] 5. Add background effects and decorations
+- [x] 6. Update review listings with retro styling
+- [x] 7. Implement responsive compatibility
 
   **What to do**:
   - Verify 80s styling works on mobile devices
