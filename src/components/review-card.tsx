@@ -1,6 +1,5 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { StarRating } from "@/components/star-rating"
@@ -13,10 +12,10 @@ interface Review {
   title: string | null
   text: string | null
   setlistHighlights: string | null
-  createdAt: string
+  createdAt: string | Date
   user: {
     id: string
-    displayName: string | null
+    name: string | null
   }
   likeCount?: number
   isLikedByUser?: boolean
@@ -29,8 +28,8 @@ interface ReviewCardProps {
   onDelete?: (reviewId: string) => void
 }
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString)
+function formatDate(dateInput: string | Date): string {
+  const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "short",
@@ -59,7 +58,7 @@ export function ReviewCard({ review, currentUserId, onEdit, onDelete }: ReviewCa
               </p>
             )}
             <p className="text-sm font-semibold text-foreground truncate">
-              {review.user.displayName || "Anonymous"}
+              {review.user.name || "Anonymous"}
             </p>
           </div>
 

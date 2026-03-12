@@ -20,7 +20,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
     where: { id },
     select: {
       id: true,
-      displayName: true,
+      name: true,
       _count: {
         select: {
           followers: true,
@@ -41,7 +41,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
       follower: {
         select: {
           id: true,
-          displayName: true,
+          name: true,
           _count: {
             select: {
               followers: true,
@@ -52,7 +52,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
       },
     },
     orderBy: {
-      createdAt: 'desc',
+      id: 'desc',
     },
     take: 100, // Limit for performance
   })
@@ -73,7 +73,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-white">
-            {user.displayName}&apos;s Followers
+            {user.name}&apos;s Followers
           </h1>
           <p className="text-purple-300">
             {user._count.followers} {user._count.followers === 1 ? 'follower' : 'followers'}
@@ -91,7 +91,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
           <div className="space-y-4">
             {followers.map((follow) => (
               <div
-                key={follow.id}
+                key={follow.followerId}
                 className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10 hover:border-purple-500/50 transition-colors"
               >
                 <Link
@@ -101,12 +101,12 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
                       <span className="text-lg font-semibold text-purple-300">
-                        {follow.follower.displayName?.charAt(0).toUpperCase() ?? '?'}
+                        {follow.follower.name?.charAt(0).toUpperCase() ?? '?'}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-semibold truncate">
-                        {follow.follower.displayName || 'Anonymous'}
+                        {follow.follower.name || 'Anonymous'}
                       </p>
                       <p className="text-sm text-gray-400">
                         {follow.follower._count.reviews} reviews • {follow.follower._count.followers} followers

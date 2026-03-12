@@ -85,7 +85,7 @@ export async function deleteCache(key: string): Promise<void> {
     await prisma.apiCache.delete({
       where: { key },
     });
-  } catch (error) {
+  } catch {
     // Ignore errors if key doesn't exist
   }
 }

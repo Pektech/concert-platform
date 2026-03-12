@@ -3,10 +3,11 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StarRating } from "@/components/star-rating";
+import { LikeButton } from "@/components/like-button";
 import { ChevronLeft, ChevronRight, Music, User, Calendar } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -43,6 +44,9 @@ interface ReviewWithRelations {
       name: string;
       city: string | null;
     };
+  };
+  _count?: {
+    likes: number;
   };
 }
 
@@ -87,6 +91,11 @@ async function getReviews(page: number): Promise<ReviewsPageState> {
             },
           },
         },
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
       },
     }),
     prisma.review.count(),
@@ -102,7 +111,10 @@ async function getReviews(page: number): Promise<ReviewsPageState> {
   };
 }
 
-function ReviewsList({ reviews }: { reviews: ReviewWithRelations[] }) {
+async function ReviewsList({ reviews }: { reviews: ReviewWithRelations[] }) {
+  const session = await auth();
+  const currentUserId = session?.user?.id;
+
   if (reviews.length === 0) {
     return (
       <div className="text-center py-16">
@@ -116,13 +128,26 @@ function ReviewsList({ reviews }: { reviews: ReviewWithRelations[] }) {
   return (
     <div className="space-y-4">
       {reviews.map((review, index) => (
-        <ReviewCard key={review.id} review={review} index={index} />
+        <ReviewCard 
+          key={review.id} 
+          review={review} 
+          index={index}
+          currentUserId={currentUserId}
+        />
       ))}
     </div>
   );
 }
 
-function ReviewCard({ review, index }: { review: ReviewWithRelations; index: number }) {
+function ReviewCard({ 
+  review, 
+  index,
+  currentUserId 
+}: { 
+  review: ReviewWithRelations; 
+  index: number;
+  currentUserId?: string;
+}) {
   const formattedDate = new Date(review.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -231,7 +256,13 @@ function ReviewCard({ review, index }: { review: ReviewWithRelations; index: num
           </div>
         )}
 
-        <div className="pl-16 mt-4 pt-4 border-t border-white/10">
+        <div className="pl-16 mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+          <LikeButton
+            reviewId={review.id}
+            initialLiked={false}
+            initialCount={review._count?.likes ?? 0}
+            currentUserId={currentUserId}
+          />
           <Link
             href={`/concerts/${review.concert.id}`}
             className="inline-flex items-center gap-2 text-sm text-purple-300 hover:text-purple-200 transition-colors duration-200 font-medium"

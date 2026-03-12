@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -229,7 +230,7 @@ export default function NewReviewPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        await response.json();
         toast.success("Review created!");
         router.push(`/reviews`);
       } else {
@@ -339,7 +340,7 @@ export default function NewReviewPage() {
                       className="w-full p-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 transition-all text-left flex items-center gap-4"
                     >
                       {artist.imageUrl ? (
-                        <img src={artist.imageUrl} alt={artist.name} className="w-12 h-12 rounded-full object-cover" />
+                        <Image src={artist.imageUrl} alt={artist.name} width={48} height={48} unoptimized className="rounded-full object-cover" />
                       ) : (
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
                           <span className="text-2xl">🎤</span>

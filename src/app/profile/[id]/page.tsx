@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { UserReviewsList } from "@/components/user-reviews-list";
+import { FollowButton } from "@/components/follow-button";
 
 interface UserProfilePageProps {
   params: Promise<{ id: string }>;
@@ -32,6 +34,8 @@ export async function generateMetadata({ params }: UserProfilePageProps): Promis
 
 export default async function UserProfilePage({ params }: UserProfilePageProps) {
   const { id } = await params;
+  const session = await auth();
+  const currentUserId = session?.user?.id;
   
   const user = await prisma.user.findUnique({
     where: { id },
@@ -46,6 +50,20 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           id: true,
         },
       },
+      followers: {
+        where: {
+          followerId: currentUserId,
+        },
+        select: {
+          id: true,
+        },
+      },
+      _count: {
+        select: {
+          followers: true,
+          following: true,
+        },
+      },
     },
   });
 
@@ -55,6 +73,8 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
 
   const reviewCount = user.reviews.length;
   const concertsCount = user.concerts.length;
+  const isFollowing = user.followers.length > 0;
+  const isOwnProfile = currentUserId === id;
 
   const joinDate = new Date(user.createdAt).toLocaleDateString("en-US", {
     month: "long",
@@ -82,63 +102,29 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                 {user.name?.charAt(0).toUpperCase() ?? user.email.charAt(0).toUpperCase()}
               </div>
               <div className="space-y-2 flex-1">
-                <h1 className="text-4xl font-bold text-white">
-                  // ADD IMPORTS:
-import { FollowButton } from "@/components/follow-button"
-import { auth } from "@/lib/auth"
-
-// ADD AFTER `const { id } = await params`:
-const session = await auth()
-const currentUserId = session?.user?.id
-const isOwnProfile = currentUserId === id
-
-// CHECK IF FOLLOWING:
-const followRecord = currentUserId && !isOwnProfile
-  ? await prisma.follow.findUnique({
-      where: { followerId_followingId: { followerId: currentUserId, followingId: id } }
-    })
-  : null
-const isFollowing = !!followRecord
-
-// UPDATE USER QUERY:
-const user = await prisma.user.findUnique({
-  where: { id },
-  include: {
-    reviews: { select: { id: true } },
-    concerts: { select: { id: true } },
-    _count: { select: { followers: true, following: true } }  // NEW
-  },
-})
-
-// EXTRACT COUNTS:
-const followerCount = user._count.followers
-const followingCount = user._count.following
-
-// ADD FOLLOWBUTTON AFTER NAME:
-<h1 className="text-4xl font-bold text-white">{user.displayName ?? "Anonymous User"}</h1>
-<FollowButton
-  userId={user.id}
-  initialFollowing={isFollowing}
-  currentUserId={currentUserId}
-  isOwnProfile={isOwnProfile}
-  size="sm"
-/>
-
-// UPDATE STAT GRID TO 4 COLUMNS:
-<div className="grid grid-cols-4 gap-4 pt-4">
-  <StatCard icon="🎵" label="Reviews" value={reviewCount} />
-  <StatCard icon="🎸" label="Concerts" value={concertsCount} />
-  <StatCard icon="👥" label="Followers" value={followerCount} href={`/profile/${user.id}/followers`} />
-  <StatCard icon="➡️" label="Following" value={followingCount} href={`/profile/${user.id}/following`} />
-</div>
-                </h1>
-                <div className="flex items-center space-x-3">
+                <h1 className="text-4xl font-bold text-white">{user.name ?? "Anonymous User"}</h1>
+                <div className="flex items-center flex-wrap gap-3">
                   <Badge variant="outline" className="text-purple-300 border-purple-500/50 bg-purple-500/10">
                     {user.role}
                   </Badge>
                   <span className="text-gray-400 text-sm">Member since {joinDate}</span>
                 </div>
+                <div className="flex items-center gap-4 text-sm text-gray-300 pt-2">
+                  <Link href={`/profile/${id}/followers`} className="hover:text-white transition-colors">
+                    <strong>{user._count.followers}</strong> followers
+                  </Link>
+                  <Link href={`/profile/${id}/following`} className="hover:text-white transition-colors">
+                    <strong>{user._count.following}</strong> following
+                  </Link>
+                </div>
               </div>
+              {!isOwnProfile && currentUserId && (
+                <FollowButton
+                  userId={id}
+                  initialFollowing={isFollowing}
+                  currentUserId={currentUserId}
+                />
+              )}
             </div>
           </CardHeader>
           <CardContent className="relative">

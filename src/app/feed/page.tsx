@@ -29,16 +29,7 @@ export default async function FeedPage() {
       user: {
         select: {
           id: true,
-          displayName: true,
-        },
-      },
-      concert: {
-        select: {
-          id: true,
-          artistName: true,
-          venue: true,
-          city: true,
-          concertDate: true,
+          name: true,
         },
       },
       _count: {

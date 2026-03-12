@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         user: {
           select: {
             id: true,
-            displayName: true,
+            name: true,
             // Don't expose private fields like email or real name
           }
         }
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Format the response to be cleaner
     const formattedLikers = likers.map(like => ({
       id: like.user.id,
-      displayName: like.user.displayName,
+      name: like.user.name,
       likedAt: like.createdAt
     }))
 

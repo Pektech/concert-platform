@@ -7,7 +7,7 @@
  * Connection: localhost:5432, database: musicbrainz_db
  */
 
-import { Pool, QueryResult } from "pg";
+import { Pool } from "pg";
 
 // MusicBrainz database connection pool
 // Uses the Docker container's exposed port (5433 on host to avoid conflict with system PostgreSQL)
@@ -62,33 +62,6 @@ export interface MBEvent {
     gid: string;
     name: string;
   } | null;
-}
-
-interface ArtistRow {
-  gid: string;
-  name: string;
-  sort_name: string;
-  comment: string | null;
-  type_name: string | null;
-  country: string | null;
-  begin_date_year: number | null;
-  end_date_year: number | null;
-}
-
-interface EventRow {
-  gid: string;
-  name: string;
-  begin_date_year: number | null;
-  begin_date_month: number | null;
-  begin_date_day: number | null;
-  time: string | null;
-  cancelled: boolean;
-  event_type: string | null;
-  place_name: string | null;
-  coordinates: { x: number; y: number } | null;
-  area_name: string | null;
-  artist_gid: string | null;
-  artist_name: string | null;
 }
 
 export interface MBArtistSearchResult {

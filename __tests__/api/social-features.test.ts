@@ -17,7 +17,7 @@ describe('Social Features API', () => {
       data: {
         email: `test.like1.${Date.now()}@example.com`,
         password: 'password123',
-        displayName: 'Test Liker',
+        name: 'Test Liker',
       },
     })
 
@@ -25,7 +25,7 @@ describe('Social Features API', () => {
       data: {
         email: `test.like2.${Date.now()}@example.com`,
         password: 'password123',
-        displayName: 'Test Reviewer',
+        name: 'Test Reviewer',
       },
     })
 
@@ -121,7 +121,7 @@ describe('Social Features API', () => {
         data: {
           email: `test.like3.${Date.now()}@example.com`,
           password: 'password123',
-          displayName: 'Test Liker 3',
+          name: 'Test Liker 3',
         },
       })
 
@@ -129,7 +129,7 @@ describe('Social Features API', () => {
         data: {
           email: `test.like4.${Date.now()}@example.com`,
           password: 'password123',
-          displayName: 'Test Liker 4',
+          name: 'Test Liker 4',
         },
       })
 
@@ -219,7 +219,7 @@ describe('Social Features API', () => {
         data: {
           email: `test.follow3.${Date.now()}@example.com`,
           password: 'password123',
-          displayName: 'Test Follower 3',
+          name: 'Test Follower 3',
         },
       })
 
@@ -227,7 +227,7 @@ describe('Social Features API', () => {
         data: {
           email: `test.follow4.${Date.now()}@example.com`,
           password: 'password123',
-          displayName: 'Test Follower 4',
+          name: 'Test Follower 4',
         },
       })
 
@@ -259,7 +259,7 @@ describe('Social Features API', () => {
           follower: {
             select: {
               id: true,
-              displayName: true,
+              name: true,
               _count: {
                 select: {
                   followers: true,
@@ -274,7 +274,7 @@ describe('Social Features API', () => {
 
       expect(Array.isArray(followers)).toBe(true)
       expect(followers[0]?.follower).toBeDefined()
-      expect(followers[0]?.follower.displayName).toBeDefined()
+      expect(followers[0]?.follower.name).toBeDefined()
     })
 
     it('should efficiently query feed reviews', async () => {
@@ -292,7 +292,7 @@ describe('Social Features API', () => {
           user: {
             select: {
               id: true,
-              displayName: true,
+              name: true,
             },
           },
           _count: {

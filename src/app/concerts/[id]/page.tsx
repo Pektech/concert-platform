@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { getConcertById } from "@/lib/setlistfm";
 import type { Setlist } from "@/types/setlistfm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -307,10 +308,13 @@ export default function ConcertDetailPage() {
                   )}
                 </Button>
                 {concert.artistImageUrl && (
-                  <img
+                  <Image
                     src={concert.artistImageUrl}
                     alt={concert.artistName}
-                    className="w-24 h-24 rounded-full object-cover border-2 border-purple-500/50 shadow-lg shadow-purple-500/20"
+                    width={96}
+                    height={96}
+                    unoptimized
+                    className="rounded-full object-cover border-2 border-purple-500/50 shadow-lg shadow-purple-500/20"
                   />
                 )}
               </div>
