@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchConcerts } from "@/lib/setlistfm";
-import { getOrSetCache, cacheKeys } from "@/lib/cache";
+import { getArtistEvents } from "@/lib/musicbrainz-db";
 
 export async function GET(
   request: NextRequest,
@@ -13,29 +12,23 @@ export async function GET(
       return NextResponse.json({ error: "Artist MBID is required" }, { status: 400 });
     }
 
-    // Use cache-through pattern
-    const result = await getOrSetCache(
-      cacheKeys.setlistConcerts(mbid),
-      async () => {
-        const response = await searchConcerts(mbid);
-        if (!response.success) {
-          throw new Error(response.error);
-        }
-        return response.data;
-      },
-      { ttlDays: 7 }
-    );
+    // Get events from local MusicBrainz database
+    const result = await getArtistEvents(mbid, 100);
+    
+    if (!result.success) {
+      throw new Error(result.error);
+    }
 
-    const concerts = (result.setlists || []).map((setlist) => ({
-      id: setlist.id,
-      date: setlist.date,
+    const concerts = (result.data.events || []).map((event) => ({
+      id: event.id,
+      date: event.date,
       venue: {
-        name: setlist.venue.name,
+        name: event.venue?.name || "Unknown Venue",
         city: {
-          name: setlist.venue.city.name,
+          name: event.venue?.city || "Unknown City",
         },
       },
-      tour: setlist.tour || undefined,
+      tour: event.tour || undefined,
     }));
 
     return NextResponse.json({ concerts });
