@@ -180,7 +180,7 @@ function ReviewCard({
           <div className="flex items-start gap-4 flex-1 min-w-0">
             <div className="flex-shrink-0">
               <Link
-                href={`/profiles/${review.user.id}`}
+                href={`/profile/${review.user.id}`}
                 className="block w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-shadow duration-300"
               >
                 {review.user.name?.charAt(0).toUpperCase() || review.user.email.charAt(0).toUpperCase()}
@@ -194,7 +194,7 @@ function ReviewCard({
 
               <div className="flex items-center gap-2 text-sm">
                 <Link
-                  href={`/profiles/${review.user.id}`}
+                  href={`/profile/${review.user.id}`}
                   className="font-semibold text-white hover:text-purple-300 transition-colors duration-200"
                 >
                   {review.user.name || "Anonymous"}

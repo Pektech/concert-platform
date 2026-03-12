@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { StarRating } from "@/components/star-rating"
 import { LikeButton } from "@/components/like-button"
 import { Pencil, Trash2 } from "lucide-react"
+import Link from "next/link"
 
 interface Review {
   id: string
@@ -57,9 +58,12 @@ export function ReviewCard({ review, currentUserId, onEdit, onDelete }: ReviewCa
                 {review.title}
               </p>
             )}
-            <p className="text-sm font-semibold text-foreground truncate">
+            <Link
+              href={`/profile/${review.user.id}`}
+              className="text-sm font-semibold text-foreground truncate hover:text-purple-400 transition-colors inline-block"
+            >
               {review.user.name || "Anonymous"}
-            </p>
+            </Link>
           </div>
 
           {isOwner && (onEdit || onDelete) && (
