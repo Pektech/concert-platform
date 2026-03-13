@@ -20,15 +20,15 @@ export async function GET(
     }
 
     const concerts = (result.data.events || []).map((event) => ({
-      id: event.id,
+      id: event.gid,
       date: event.date,
       venue: {
         name: event.venue?.name || "Unknown Venue",
         city: {
-          name: event.venue?.city || "Unknown City",
+          name: event.venue?.area || "Unknown City",
         },
       },
-      tour: event.tour || undefined,
+      tour: undefined,
     }));
 
     return NextResponse.json({ concerts });
