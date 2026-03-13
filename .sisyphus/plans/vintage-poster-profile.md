@@ -82,7 +82,7 @@ Transform the 80s retro profile page to have the look and feel of a poster plast
 
   **Commit**: NO (groups with Task 2)
 
-- [ ] 2. Update Retro Page for Poster Aesthetic
+- [x] 2. Update Retro Page for Poster Aesthetic
 
   **What to do**:
   - Remove all references to old neon-based classes

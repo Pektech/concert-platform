@@ -83,11 +83,11 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
   });
 
   return (
-    <div className={`${styles['retro-grid-bg']} min-h-screen py-12 px-6`}>
+    <div className={`${styles['poster-paper-bg']} min-h-screen py-12 px-6`}>
       <div className="max-w-3xl mx-auto space-y-8">
         <Link
           href="/"
-          className={`inline-flex items-center ${styles['neon-80s']} cyan transition-colors duration-200 hover:opacity-80 group`}
+          className={`inline-flex items-center ${styles['vintage-stamp']} teal transition-colors duration-200 hover:opacity-80 group`}
         >
           <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -95,7 +95,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           Back to Home
         </Link>
 
-        <Card className={`${styles['neon-border']} pink bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden`}>
+        <Card className={`${styles['poster-border']} ${styles['layered-paper']} ${styles['corner-fold']} ${styles['torn-edge-top']} ${styles['torn-edge-bottom']} crimson bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden`}>
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10" />
           <CardHeader className="relative">
             <div className="flex items-center space-x-6">
@@ -103,7 +103,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                 {user.name?.charAt(0).toUpperCase() ?? user.email.charAt(0).toUpperCase()}
               </div>
               <div className="space-y-2 flex-1">
-                <h1 className={`text-4xl font-bold ${styles['neon-80s']}`}>{user.name ?? "Anonymous User"}</h1>
+                <h1 className={`text-4xl font-bold ${styles['vintage-stamp']} burgundy`}>{user.name ?? "Anonymous User"}</h1>
                 <div className="flex items-center flex-wrap gap-3">
                   <Badge variant="outline" className="text-purple-300 border-purple-500/50 bg-purple-500/10">
                     {user.role}
@@ -146,9 +146,9 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
           </CardContent>
         </Card>
 
-        <Card className={`${styles['neon-border']} purple bg-white/5 border-white/10 backdrop-blur-xl`}>
+        <Card className={`${styles['poster-border']} ${styles['layered-paper']} ${styles['corner-fold']} ${styles['torn-edge-top']} ${styles['torn-edge-bottom']} teal bg-white/5 border-white/10 backdrop-blur-xl`}>
           <CardHeader>
-            <h2 className={`text-2xl font-bold text-white flex items-center ${styles['neon-80s']} cyan`}>
+            <h2 className={`text-2xl font-bold text-white flex items-center ${styles['vintage-stamp']} teal`}>
               <span className="text-3xl mr-3">📊</span>
               Profile Statistics
             </h2>
@@ -163,7 +163,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                     <p className="text-gray-400 text-sm">Reviews written</p>
                   </div>
                 </div>
-                <span className={`text-3xl font-bold ${styles['neon-80s']} purple`}>{reviewCount}</span>
+                <span className={`text-3xl font-bold ${styles['vintage-stamp']} burgundy`}>{reviewCount}</span>
               </div>
               <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors duration-200">
                 <div className="flex items-center space-x-3">
@@ -173,7 +173,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                     <p className="text-gray-400 text-sm">Concerts in profile</p>
                   </div>
                 </div>
-                <span className={`text-3xl font-bold ${styles['neon-80s']} purple`}>{concertsCount}</span>
+                <span className={`text-3xl font-bold ${styles['vintage-stamp']} burgundy`}>{concertsCount}</span>
               </div>
             </div>
           </CardContent>
@@ -182,10 +182,10 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
         <UserReviewsList userId={user.id} variant="retro" />
 
         {reviewCount === 0 && concertsCount === 0 && (
-          <Card className={`${styles['neon-border']} green bg-white/5 border-white/10 backdrop-blur-xl`}>
+          <Card className={`${styles['poster-border']} ${styles['layered-paper']} ${styles['corner-fold']} ${styles['torn-edge-top']} ${styles['torn-edge-bottom']} sage bg-white/5 border-white/10 backdrop-blur-xl`}>
             <CardContent className="pt-6 text-center">
               <div className="text-6xl mb-4">🎭</div>
-              <h3 className={`text-xl font-bold text-white mb-2 ${styles['neon-80s']} green`}>No Activity Yet</h3>
+              <h3 className={`text-xl font-bold text-white mb-2 ${styles['vintage-stamp']} sage`}>No Activity Yet</h3>
               <p className="text-gray-400 mb-6">
                 This user hasn&apos;t reviewed any concerts or added any to their profile yet.
               </p>
@@ -209,11 +209,11 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
 function StatCard({ icon, label, value, delay }: { icon: string; label: string; value: number; delay: number }) {
   return (
     <div
-      className={`group/stat ${styles['neon-border']} cyan text-center p-4 rounded-lg bg-white/5 transition-all duration-300 hover:bg-white/15 hover:shadow-lg hover:shadow-cyan-500/30 cursor-default`}
+      className={`group/stat ${styles['poster-border']} ${styles['layered-paper']} ${styles['torn-edge-top']} ${styles['torn-edge-bottom']} sage text-center p-4 rounded-lg bg-white/5 transition-all duration-300 hover:bg-white/15 hover:shadow-lg hover:shadow-cyan-500/30 cursor-default`}
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="text-4xl mb-2 group-hover/stat:scale-110 transition-transform duration-300">{icon}</div>
-      <div className={`text-3xl font-bold ${styles['neon-80s']} green mb-1 group-hover/stat:scale-105 transition-transform duration-300`}>{value}</div>
+      <div className={`text-3xl font-bold ${styles['vintage-stamp']} sage mb-1 group-hover/stat:scale-105 transition-transform duration-300`}>{value}</div>
       <div className="text-gray-400 text-sm group-hover/stat:text-gray-300 transition-colors duration-300">{label}</div>
     </div>
   );
