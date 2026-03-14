@@ -17,6 +17,19 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+// Explicit types for seed data
+interface ArtistData { id: string; name: string }
+interface VenueData { id: string; name: string }
+interface ConcertData { id: string; title: string }
+interface UserData { id: string; email: string; name: string | null }
+interface ReviewSeedData {
+  userId: string;
+  concertId: string;
+  rating: number;
+  text: string;
+  setlistHighlights: string;
+}
+
 async function main() {
   console.log("Seeding database...");
 
@@ -28,7 +41,7 @@ async function main() {
   await prisma.venue.deleteMany();
 
   // Create Artists
-  const artists = await Promise.all([
+  const artists: ArtistData[] = await Promise.all([
     prisma.artist.create({
       data: {
         name: "Taylor Swift",
@@ -74,7 +87,7 @@ async function main() {
   console.log(`Created ${artists.length} artists`);
 
   // Create Venues
-  const venues = await Promise.all([
+  const venues: VenueData[] = await Promise.all([
     prisma.venue.create({
       data: {
         name: "Madison Square Garden",
@@ -120,7 +133,7 @@ async function main() {
   console.log(`Created ${venues.length} venues`);
 
   // Create Concerts
-  const concerts = await Promise.all([
+  const concerts: ConcertData[] = await Promise.all([
     prisma.concert.create({
       data: {
         title: "The Eras Tour",
@@ -216,7 +229,7 @@ async function main() {
   // Create Users with hashed passwords
   const hashedPassword = await bcrypt.hash("password123", 10);
   
-  const users = await Promise.all([
+  const users: UserData[] = await Promise.all([
     prisma.user.create({
       data: {
         email: "alex.johnson@example.com",
@@ -262,7 +275,7 @@ async function main() {
   console.log(`Created ${users.length} users`);
 
   // Create Reviews with realistic data
-  const reviewsData = [
+  const reviewsData: ReviewSeedData[] = [
     // Alex Johnson's reviews (3 reviews)
     {
       userId: users[0].id,
