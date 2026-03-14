@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { auth } from "@/lib/auth";
@@ -216,14 +218,4 @@ function StatCard({ icon, label, value, delay }: { icon: string; label: string; 
       <div className="text-gray-400 text-sm">{label}</div>
     </div>
   );
-}
-
-export async function generateStaticParams() {
-  const users = await prisma.user.findMany({
-    select: { id: true },
-  });
-
-  return users.map((user) => ({
-    id: user.id,
-  }));
 }
