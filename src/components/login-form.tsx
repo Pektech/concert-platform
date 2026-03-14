@@ -60,11 +60,9 @@ export function LoginForm() {
       if (result?.error) {
         setError(result.error)
       } else {
-        // Update session to ensure client-side state is in sync
         await update()
-        // Small delay to ensure session propagates
-        await new Promise(resolve => setTimeout(resolve, 100))
         router.push("/")
+        router.refresh()
       }
     } catch {
       setError("An error occurred. Please try again.")
