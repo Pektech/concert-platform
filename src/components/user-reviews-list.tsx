@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StarRating } from "@/components/star-rating"
 import { Calendar, MapPin, Music, ChevronLeft, ChevronRight } from "lucide-react"
-import styles from "@/styles/80s-profile.module.css"
 
 interface UserReview {
   id: string
@@ -34,7 +33,6 @@ interface UserReview {
 interface UserReviewsListProps {
   userId: string
   pageSize?: number
-  variant?: 'default' | 'retro'
 }
 
 function formatConcertDate(dateString: string): string {
@@ -47,7 +45,7 @@ function formatConcertDate(dateString: string): string {
   }).format(date)
 }
 
-export function UserReviewsList({ userId, pageSize = 5, variant = 'default' }: UserReviewsListProps) {
+export function UserReviewsList({ userId, pageSize = 5 }: UserReviewsListProps) {
   const [reviews, setReviews] = useState<UserReview[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -132,12 +130,12 @@ export function UserReviewsList({ userId, pageSize = 5, variant = 'default' }: U
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className={`text-2xl font-bold text-white flex items-center gap-3 ${variant === 'retro' ? 'neon-80s cyan' : ''}`}>
+        <h2 className="text-2xl font-bold text-white flex items-center gap-3">
           <span className="text-3xl">🎤</span>
           My Reviews
           <Badge
             variant="secondary"
-            className={`bg-purple-500/20 text-purple-300 border-purple-500/30 ml-2 ${variant === 'retro' ? 'neon-border cyan' : ''}`}
+            className="bg-purple-500/20 text-purple-300 border-purple-500/30 ml-2"
           >
             {totalReviews} {totalReviews === 1 ? "Review" : "Reviews"}
           </Badge>
@@ -146,7 +144,7 @@ export function UserReviewsList({ userId, pageSize = 5, variant = 'default' }: U
 
       <div className="grid gap-4">
         {reviews.map((review) => (
-          <ReviewListItem key={review.id} review={review} variant={variant} />
+          <ReviewListItem key={review.id} review={review} />
         ))}
       </div>
 
@@ -181,7 +179,7 @@ export function UserReviewsList({ userId, pageSize = 5, variant = 'default' }: U
   )
 }
 
-function ReviewListItem({ review, variant = 'default' }: { review: UserReview; variant?: 'default' | 'retro' }) {
+function ReviewListItem({ review }: { review: UserReview }) {
   const concertDate = formatConcertDate(review.concert.date)
   const textPreview = review.text
     ? review.text.length > 200
@@ -190,7 +188,7 @@ function ReviewListItem({ review, variant = 'default' }: { review: UserReview; v
     : null
 
   return (
-    <Card className={`group/review relative overflow-hidden transition-all duration-300 bg-white/5 border-white/10 backdrop-blur-xl hover:bg-white/10 hover:shadow-lg ${variant === 'retro' ? `${styles['neon-border']} purple hover:shadow-purple-500/20` : 'border-l-4 border-l-purple-500/50 hover:border-l-purple-400 hover:shadow-purple-500/10'}`}>
+    <Card className="group/review relative overflow-hidden transition-all duration-300 bg-white/5 border-white/10 backdrop-blur-xl hover:bg-white/10 hover:shadow-lg border-l-4 border-l-purple-500/50 hover:border-l-purple-400 hover:shadow-purple-500/10">
       {review.attended && (
         <div className="absolute top-0 right-0">
           <div className="bg-gradient-to-l from-emerald-500/10 to-transparent px-3 py-1.5">
