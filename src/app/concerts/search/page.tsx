@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function SearchConcertsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-6">
@@ -13,10 +15,10 @@ export default function SearchConcertsPage() {
         {/* Description */}
         <div className="space-y-4 text-lg text-gray-300">
           <p>
-            <strong className="text-purple-300">Your Favorite Artists' Upcoming Concerts</strong>
+            <strong className="text-purple-300">Your Favorite Artists&apos; Upcoming Concerts</strong>
           </p>
           <p>
-            Never miss a show! We'll notify you when artists you've reviewed 
+            Never miss a show! We&apos;ll notify you when artists you&apos;ve reviewed 
             or liked are touring near you.
           </p>
           <div className="my-8 border-t border-white/10" />
@@ -24,7 +26,7 @@ export default function SearchConcertsPage() {
             <strong className="text-purple-300">Discover New Artists in Your Area</strong>
           </p>
           <p>
-            Based on your reviews and likes, we'll recommend similar artists 
+            Based on your reviews and likes, we&apos;ll recommend similar artists 
             touring near you.
           </p>
         </div>
@@ -32,14 +34,14 @@ export default function SearchConcertsPage() {
         {/* CTA */}
         <div className="pt-8">
           <p className="text-sm text-gray-400">
-            Keep reviewing concerts you've attended, and we'll help you 
+            Keep reviewing concerts you&apos;ve attended, and we&apos;ll help you 
             discover your next favorite live show.
           </p>
         </div>
         
         {/* Back Link */}
         <div className="pt-8">
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-2 text-purple-300 hover:text-purple-200 transition-colors"
           >
@@ -47,7 +49,7 @@ export default function SearchConcertsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
