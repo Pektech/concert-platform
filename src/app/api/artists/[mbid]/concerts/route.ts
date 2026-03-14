@@ -21,7 +21,7 @@ export async function GET(
 
     const concerts = (result.data.events || []).map((event) => ({
       id: event.gid,
-      date: event.date,
+      date: event.year && event.month && event.day ? `${event.year}-${String(event.month).padStart(2, "0")}-${String(event.day).padStart(2, "0")}` : undefined,
       venue: {
         name: event.venue?.name || "Unknown Venue",
         city: {

@@ -83,7 +83,7 @@ export default async function FeedPage() {
           </div>
 
           {followedCount === 0 && (
-            <Link href="/browse">
+            <Link href="/reviews">
               <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
                 <Users className="w-4 h-4" />
                 Find Users to Follow
@@ -104,7 +104,7 @@ export default async function FeedPage() {
                 <p className="text-gray-400 mb-6">
                   Follow other users to see their reviews in your feed
                 </p>
-                <Link href="/browse">
+                <Link href="/reviews">
                   <button className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
                     Browse Reviews
                   </button>
