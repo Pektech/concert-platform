@@ -1,6 +1,11 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
+import type { Review, User } from "@prisma/client"
+
+type ReviewWithUser = Review & {
+  user: Pick<User, "id" | "name">
+}
 
 export async function getReviewsByConcertId(concertId: string) {
   try {
@@ -17,7 +22,7 @@ export async function getReviewsByConcertId(concertId: string) {
       orderBy: {
         createdAt: "desc",
       },
-    })
+    }) as ReviewWithUser[]
 
     return {
       success: true,

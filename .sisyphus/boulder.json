@@ -1,10 +1,8 @@
 {
-  "active_plan": "/media/richard-leddy/extra/marcus/.sisyphus/plans/vintage-poster-profile.md",
-  "started_at": "2026-03-12T23:59:52.434Z",
-  "session_ids": [
-    "ses_320c33cd8ffeN32sUMvWG7fAs0"
-  ],
-  "plan_name": "vintage-poster-profile",
+  "active_plan": "/media/richard-leddy/extra/marcus/.sisyphus/plans/undo-80s-profile.md",
+  "started_at": "2026-03-14T11:52:18.410Z",
+  "session_ids": ["ses_3165e69fcffeZ241Qf60n3u3ex"],
+  "plan_name": "undo-80s-profile",
   "agent": "atlas",
   "worktree_path": "/media/richard-leddy/extra/marcus"
 }
