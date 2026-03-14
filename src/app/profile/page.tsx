@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getServerSession } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { UserReviewsList } from "@/components/user-reviews-list"
