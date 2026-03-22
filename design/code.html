@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Electric Venue | Your Concert Life, Documented</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=Inter:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#7743b5",
+              "tertiary-container": "#aba200",
+              "background": "#131313",
+              "primary-fixed-dim": "#dab9ff",
+              "on-secondary-fixed-variant": "#523e69",
+              "inverse-surface": "#e5e2e1",
+              "tertiary": "#d4ca38",
+              "on-primary-fixed": "#2a0053",
+              "surface-container-low": "#1c1b1b",
+              "tertiary-fixed": "#f1e752",
+              "surface-container-highest": "#353534",
+              "on-tertiary-fixed": "#1e1c00",
+              "surface-container": "#201f1f",
+              "on-primary-fixed-variant": "#5e289b",
+              "primary-container": "#bb86fc",
+              "on-secondary-container": "#c7aee2",
+              "on-primary": "#460283",
+              "on-tertiary": "#353200",
+              "on-secondary": "#3a2751",
+              "surface-container-high": "#2a2a2a",
+              "error-container": "#93000a",
+              "secondary-container": "#54406c",
+              "error": "#ffb4ab",
+              "tertiary-fixed-dim": "#d4ca38",
+              "outline": "#978d9d",
+              "on-tertiary-container": "#3b3700",
+              "outline-variant": "#4b4452",
+              "secondary": "#d5bcf0",
+              "primary": "#dab9ff",
+              "on-tertiary-fixed-variant": "#4d4800",
+              "on-secondary-fixed": "#25123b",
+              "surface": "#131313",
+              "secondary-fixed-dim": "#d5bcf0",
+              "on-surface-variant": "#cdc3d4",
+              "surface-bright": "#393939",
+              "surface-variant": "#353534",
+              "surface-dim": "#131313",
+              "on-primary-container": "#4c0f89",
+              "on-surface": "#e5e2e1",
+              "on-error": "#690005",
+              "primary-fixed": "#eedbff",
+              "inverse-on-surface": "#313030",
+              "surface-tint": "#dab9ff",
+              "surface-container-lowest": "#0e0e0e",
+              "on-error-container": "#ffdad6",
+              "on-background": "#e5e2e1",
+              "secondary-fixed": "#eedbff"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0E0E0E;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .text-glow {
+            text-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-zinc-950/80 backdrop-blur-md border-b border-white/10 shadow-2xl shadow-purple-900/20">
+<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+<div class="text-2xl font-black text-purple-500 tracking-tighter uppercase font-['Space_Grotesk']">
+                Electric Venue
+            </div>
+<div class="hidden md:flex items-center space-x-8 font-['Space_Grotesk'] font-bold tracking-tight">
+<a class="text-purple-400 border-b-2 border-purple-500 pb-1" href="#">Explore</a>
+<a class="text-zinc-400 hover:text-white transition-colors" href="#">Venues</a>
+<a class="text-zinc-400 hover:text-white transition-colors" href="#">Artists</a>
+<a class="text-zinc-400 hover:text-white transition-colors" href="#">Community</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-6 py-2 font-bold tracking-tight rounded-lg active:scale-95 duration-150 transition-all hover:bg-white/5 hover:text-purple-300">
+                    Sign Up
+                </button>
+</div>
+</div>
+</nav>
+<main>
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-40 mix-blend-lighten" data-alt="Massive concert crowd with neon lights and purple glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjzjHZBTR2eNj-PXtkJ836S957Rnw-rx6iGnmfRHrdAYZz0dj-wkQex5b2SuVRrLLbprnSKf25St1iF7I7vZXaYVVU5QZmfg30f3pQGB1ceDcc2z_DSjnAReNF1CY_4PQoQzNsLPZXuEwWlz_6GoXHkF12HFq5-2ugb1_bEhtVmpbUtKDcMF5OZnLjSaop2pHpKk9BCYcwhlPHi-Cds7Zrd8_Y6L5wYRZG0tjeI-pl6gbg2mWysYdZuOAFLByUAovv5FjHPmgZL-k"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0E0E0E] via-transparent to-transparent"></div>
+<div class="absolute inset-0 bg-radial-gradient from-primary/10 to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
+<div class="inline-block px-4 py-1.5 mb-6 border border-primary/30 rounded-full bg-primary/5 text-primary text-xs font-bold tracking-[0.2em] uppercase">
+                    100k+ Gigs Logged this Month
+                </div>
+<h1 class="font-headline text-6xl md:text-8xl font-black tracking-tighter leading-none mb-6 text-glow">
+                    YOUR CONCERT LIFE, <span class="text-primary italic">DOCUMENTED.</span>
+</h1>
+<p class="font-body text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Log every gig, rate the vibe, and join a global community of music fanatics.
+                </p>
+<div class="flex flex-col md:flex-row gap-4 justify-center">
+<button class="bg-primary-container text-on-primary-container px-10 py-5 text-lg font-black uppercase tracking-widest rounded-xl hover:shadow-[0_0_30px_rgba(187,134,252,0.5)] transition-all active:scale-95">
+                        Get Started - It's Free
+                    </button>
+<button class="glass-card px-10 py-5 text-lg font-bold tracking-tight rounded-xl hover:bg-white/10 transition-all border-white/20">
+                        View Trending
+                    </button>
+</div>
+</div>
+</section>
+<!-- Value Props Section -->
+<section class="max-w-7xl mx-auto px-6 py-32">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="group p-8 glass-card rounded-2xl hover:border-primary/40 transition-all">
+<div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">confirmation_number</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">Log Your Gigs</h3>
+<p class="font-body text-zinc-400 leading-relaxed">
+                        Never forget a setlist or a mosh pit again. Keep a digital journal of every live music moment you experience.
+                    </p>
+</div>
+<div class="group p-8 glass-card rounded-2xl hover:border-primary/40 transition-all">
+<div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">explore</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">Discover the Noise</h3>
+<p class="font-body text-zinc-400 leading-relaxed">
+                        Find upcoming shows and trending artists near you. Get personalized recommendations based on your listening history.
+                    </p>
+</div>
+<div class="group p-8 glass-card rounded-2xl hover:border-primary/40 transition-all">
+<div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">groups</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">Join the Pit</h3>
+<p class="font-body text-zinc-400 leading-relaxed">
+                        Follow friends and see what the critics are saying. Share your reviews and connect with fans who share your taste.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Community Preview -->
+<section class="bg-surface-container-low py-32 overflow-hidden">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+<div>
+<h2 class="font-headline text-4xl md:text-5xl font-black tracking-tight mb-4">TRENDING NOW</h2>
+<p class="font-body text-zinc-500">The most discussed shows on Electric Venue right now.</p>
+</div>
+<a class="text-primary font-bold flex items-center gap-2 group" href="#">
+                        Explore All 
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<!-- Poster 1 -->
+<div class="space-y-4">
+<div class="aspect-[2/3] relative overflow-hidden rounded-lg group">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Indie rock concert poster visual" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAA2qJn-6IL1YFv0XjPICx6z0_AGlnFueM6_ukkK3CBgSoqxIQhd1dEKvqKusZ61vVBvoK3zJ4NfgMrdy1A_ztwzdpVqWkgobYCcWQ0sKZVmE-cw1m067u0SKy2x42UH71yHyjJIs00K9q6INsP5JHS_JEK7_votz4QzMrhbEuV1uZxe-Xn9hgMpBmQjvR82w2t8RUSBWOEzybk5RDt2mHLiToMxDfKTQUAO_eqAr2LvpL076LlqVFsPtQjA_UTLe0mT5ixTNfuaQ"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-primary text-on-primary font-black px-4 py-2 rounded uppercase text-xs">Review</button>
+</div>
+</div>
+<div>
+<h4 class="font-headline font-bold text-lg truncate">Electric Dreams Tour</h4>
+<p class="text-zinc-500 text-sm mb-2">Neon Echoes • London O2</p>
+<div class="flex text-primary gap-0.5">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+</div>
+</div>
+<!-- Poster 2 -->
+<div class="space-y-4">
+<div class="aspect-[2/3] relative overflow-hidden rounded-lg group">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Heavy metal concert stage lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlYvUFlkrKceum07kPdl86O5np8SzTE5l-cPk2aOUBWo-_xdQ5cWBCidxIizLh4qqd8sW04-4-lzsDGbp-8skiDNDYo7hv67uPTGR0X_wCYXNlDua_MhrcYYXVmsRip2DSfPCJZrKFMqJnWHxgA3RmB43GfIFLevhch2p96Wk0dJZ1guuMkh2oceJ8YJFkYgNDS6ZhpBG_bOHUrhuoUQ8w9zRpslgtT5H2M16r8TNbA0LZf_8xd3HkUwqNUlMFv7IcOjJ9ExjCrjg"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-primary text-on-primary font-black px-4 py-2 rounded uppercase text-xs">Review</button>
+</div>
+</div>
+<div>
+<h4 class="font-headline font-bold text-lg truncate">Void of Silence</h4>
+<p class="text-zinc-500 text-sm mb-2">The Abyss • Berlin</p>
+<div class="flex text-primary gap-0.5">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<!-- Poster 3 -->
+<div class="space-y-4">
+<div class="aspect-[2/3] relative overflow-hidden rounded-lg group">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Pop artist performing on colorful stage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvwzw6oYINWtkW9JzxG2WqjE-1l5i86gkJXB6QFD_uFwOwK1R7wLvcCcsge2Yr7oCSkXw5o5iyR4gwdFwketyiyuWJGcldvX7sy0bQ9o4lutczEkvWQihwOqOhLK1B1YsF-1axhWyViGMg65qScdCFQOiAJSAvzW99sAIQeVWz1Qz-e34GoSoWZo4pLZzy36ZlyidhH9aDZokcynHKNovF1-Itcwt5R3QtV0Ls6gD2gaJwJcprgWn_QgaHonPGW1Of03pwnqtTJeM"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-primary text-on-primary font-black px-4 py-2 rounded uppercase text-xs">Review</button>
+</div>
+</div>
+<div>
+<h4 class="font-headline font-bold text-lg truncate">Solar Flare Live</h4>
+<p class="text-zinc-500 text-sm mb-2">Astra Blue • NYC</p>
+<div class="flex text-primary gap-0.5">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+</div>
+</div>
+<!-- Poster 4 -->
+<div class="space-y-4">
+<div class="aspect-[2/3] relative overflow-hidden rounded-lg group">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Electronic dance music festival crowd" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdWeKgJ2HnxKY1K3dh8WPYKNvO895ZLI9pofp57GlcU-U8ipWUQiPO6zG6NAwM5Nyx5fYZmBbaG0jK-6NhxmcOaNy1-Cd07eo7vlJgWhuzzQY1jU6UoDYFqGkF7C5dUPBXVxSaSalDBsSTRam5y3057k-hbEtL0xNiUlqz60F9NMCySVESQqCE9noYUgJSOJdsMfads4-2W3oEmQQe_YTJLUcgxjEGeBmovtUpFUcXyyR6jud4csSo64ktRq4QK1VcOus-8azJzOE"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-primary text-on-primary font-black px-4 py-2 rounded uppercase text-xs">Review</button>
+</div>
+</div>
+<div>
+<h4 class="font-headline font-bold text-lg truncate">Pulse Frequency</h4>
+<p class="text-zinc-500 text-sm mb-2">Circuit • Tokyo</p>
+<div class="flex text-primary gap-0.5">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star_half</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="relative py-32 overflow-hidden border-t border-white/5">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/20 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+<h2 class="font-headline text-5xl md:text-6xl font-black mb-8 leading-tight">READY TO LOG YOUR NEXT CORE MEMORY?</h2>
+<p class="font-body text-zinc-400 text-xl mb-12">Join 500,000+ music fans tracking their sonic journey.</p>
+<button class="bg-primary-container text-on-primary-container px-12 py-6 text-xl font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all">
+                    Create Your Account
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-white/5 mt-20 bg-zinc-950">
+<div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col items-center md:items-start gap-2">
+<div class="text-lg font-bold text-white font-['Space_Grotesk'] tracking-tighter uppercase">Electric Venue</div>
+<p class="text-zinc-500 text-sm font-['Inter']">© 2024 Electric Venue. Keep the volume up.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6 font-['Inter'] text-sm">
+<a class="text-zinc-500 hover:text-purple-400 underline-offset-4 hover:underline transition-opacity hover:opacity-80" href="#">About</a>
+<a class="text-zinc-500 hover:text-purple-400 underline-offset-4 hover:underline transition-opacity hover:opacity-80" href="#">Guidelines</a>
+<a class="text-zinc-500 hover:text-purple-400 underline-offset-4 hover:underline transition-opacity hover:opacity-80" href="#">Privacy</a>
+<a class="text-zinc-500 hover:text-purple-400 underline-offset-4 hover:underline transition-opacity hover:opacity-80" href="#">Terms</a>
+<a class="text-zinc-500 hover:text-purple-400 underline-offset-4 hover:underline transition-opacity hover:opacity-80" href="#">Support</a>
+<a class="text-zinc-500 hover:text-purple-400 underline-offset-4 hover:underline transition-opacity hover:opacity-80" href="#">Careers</a>
+</div>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-xl">brand_awareness</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-xl">podcasts</span>
+</a>
+</div>
+</div>
+</footer>
+</body></html>

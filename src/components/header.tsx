@@ -24,10 +24,10 @@ export function Header() {
           {/* Logo / Brand */}
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative">
-              <span className="text-2xl font-bold bg-gradient-to-r from-violet-600 via-fuchsia-500 to-amber-500 bg-clip-text text-transparent group-hover:from-amber-500 group-hover:via-fuchsia-500 group-hover:to-violet-600 transition-all duration-500">
-                ConcertVibe
+              <span className="text-2xl font-bold text-[#E5E2E1] tracking-wider group-hover:text-[#BB86FC] transition-colors duration-300">
+                ELECTRIC VENUE
               </span>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-violet-600 to-amber-500 group-hover:w-full transition-all duration-500" />
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#BB86FC] group-hover:w-full transition-all duration-500" />
             </div>
           </Link>
 
@@ -90,7 +90,7 @@ export function Header() {
                   </Button>
                 </Link>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => signOut({ callbackUrl: "/" })}
                   className="text-sm"
@@ -173,7 +173,7 @@ export function Header() {
                       </Button>
                     </Link>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       className="w-full justify-start text-sm"
                       onClick={() => {
                         signOut({ callbackUrl: "/" })
