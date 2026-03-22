@@ -1,17 +1,7 @@
 "use client"
 
-import React from "react"
 import Image from "next/image"
-import { Button, PrimaryButton, GhostButton } from "@/components/ui/button"
-
-interface HeroSectionProps {
-  title?: string
-  subtitle?: string
-  primaryCtaText?: string
-  secondaryCtaText?: string
-  onPrimaryClick?: () => void
-  onSecondaryClick?: () => void
-}
+import { Button, PrimaryButton } from "@/components/ui/button"
 
 export function HeroSection() {
   return (
@@ -27,7 +17,7 @@ export function HeroSection() {
         />
       </div>
 
-      <div className="absolute inset-0 z-1 bg-gradient-to-b from-[#0E0E0E]/80 via-[#0E0E0E]/60 to-[#0E0E0E]" />
+      <div className="absolute inset-0 z-1 bg-gradient-to-b from-[#0E0E0E]/90 via-[#0E0E0E]/70 via-[#0E0E0E]/50 to-transparent" />
 
       {/* Laser light effects */}
       <div className="absolute inset-0 z-1 overflow-hidden">
@@ -36,7 +26,7 @@ export function HeroSection() {
         <div className="absolute top-0 right-1/4 w-1 h-[450px] bg-gradient-to-b from-[#BB86FC]/35 to-transparent transform skew-x-12 blur-sm" />
       </div>
 
-      <div className="relative z-2 container mx-auto px-6 min-h-[90vh] flex flex-col items-center justify-center text-center">
+      <div className="relative z-10 container mx-auto px-6 min-h-[90vh] flex flex-col items-center justify-center text-center">
         {/* Stats badge */}
         <div className="mb-6 px-4 py-2 rounded-full border border-[#BB86FC]/30 bg-[#BB86FC]/10 backdrop-blur-sm">
           <p className="text-sm font-sans text-[#BB86FC] tracking-wide">
@@ -56,23 +46,24 @@ export function HeroSection() {
 
         <div className="flex flex-wrap items-center gap-4 justify-center">
           <PrimaryButton
-            className="text-base px-8 py-4 h-auto bg-[#BB86FC] text-[#0E0E0E] hover:bg-[#DAB9FF] hover:shadow-[0_0_24px_rgba(187,134,252,0.6)] transition-all duration-300 font-semibold"
+            className="text-base px-8 py-4 h-auto font-semibold transition-all duration-300 hover:!shadow-[0_0_40px_4px_rgba(187,134,252,1)]!"
           >
             GET STARTED - IT&apos;S FREE
           </PrimaryButton>
           <Button
             variant="secondary"
-            className="text-base px-8 py-4 h-auto border border-[#353534] bg-transparent text-[#E5E2E1] hover:border-[#BB86FC] hover:text-[#BB86FC] transition-all duration-300 font-semibold"
+            className="text-base px-8 py-4 h-auto font-semibold border-2 border-[#BB86FC] text-[#BB86FC] hover:!bg-[#BB86FC] hover:!text-[#0E0E0E] hover:!shadow-[0_0_40px_4px_rgba(187,134,252,1)]! transition-all duration-300"
           >
             View Trending
           </Button>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-48 md:h-64 bg-gradient-to-t from-[#0E0E0E] via-[#0E0E0E]/40 to-transparent z-2" />
+      {/* Extended gradient fade - adjusted to not wash out buttons */}
+      <div className="absolute bottom-0 left-0 right-0 h-48 md:h-64 bg-gradient-to-t from-[var(--surface-0)] via-[var(--surface-0)]/60 to-transparent z-2" />
       
-      {/* Extended soft fade at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0E0E0E] to-transparent z-3" />
+      {/* Additional soft fade layer */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 md:h-48 bg-gradient-to-t from-[var(--surface-0)] to-transparent z-3" />
     </section>
   )
 }

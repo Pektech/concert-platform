@@ -1,14 +1,6 @@
 "use client"
 
-import React from "react"
 import { PrimaryButton } from "@/components/ui/button"
-
-interface CallToActionProps {
-  title?: string
-  subtitle?: string
-  ctaText?: string
-  onCtaClick?: () => void
-}
 
 export function CallToAction() {
   return (

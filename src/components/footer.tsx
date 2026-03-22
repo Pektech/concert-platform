@@ -44,10 +44,10 @@ export function Footer() {
           <div className="md:col-span-1">
             <NavLink href="/" className="group inline-block mb-4">
               <div className="relative">
-                <span className="text-2xl font-bold font-headings bg-gradient-to-r from-[#dab9ff] via-[#d5bcf0] to-[#d4ca38] bg-clip-text text-transparent group-hover:from-[#d4ca38] group-hover:via-[#d5bcf0] group-hover:to-[#dab9ff] transition-all duration-500">
-                  ConcertVibe
+                <span className="text-2xl font-bold font-headings text-[#E5E2E1] tracking-wider group-hover:text-[#BB86FC] transition-colors duration-300">
+                  ELECTRIC VENUE
                 </span>
-                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#dab9ff] to-[#d4ca38] group-hover:w-full transition-all duration-500" />
+                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#BB86FC] group-hover:w-full transition-all duration-500" />
               </div>
             </NavLink>
             <p className="text-sm text-[#cdc3d4] mb-4">
@@ -115,7 +115,7 @@ export function Footer() {
               Electric Venue
             </h3>
             <p className="text-sm text-[#cdc3d4] mb-2">
-              © {new Date().getFullYear()} ConcertVibe
+              © {new Date().getFullYear()} Electric Venue. Keep the volume up.
             </p>
             <p className="text-xs text-[#978d9d]">
               Powered by MusicBrainz & Setlist.fm

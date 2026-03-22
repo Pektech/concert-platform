@@ -122,6 +122,11 @@
   --surface-2: oklch(0.205 0 0);
   --text-primary: oklch(0.91 0 0);
   --text-muted: oklch(0.59 0.06 306);
+  /* Electric Venue Brand Tokens */
+  --electric-primary: #BB86FC;
+  --electric-primary-hover: #DAB9FF;
+  --electric-surface-0: #0E0E0E;
+  --electric-surface-container: #1C1B1B;
 }
 
 @layer base {

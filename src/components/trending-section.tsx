@@ -21,34 +21,34 @@ interface TrendingSectionProps {
 const defaultConcerts: TrendingConcert[] = [
   {
     id: "1",
-    artist: "The Midnight Echo",
-    venue: "Electric Ballroom",
-    date: "Mar 28, 2026",
+    artist: "Electric Dreams Tour",
+    venue: "Nora En Pure",
+    date: "London O2",
     location: "London, UK",
     imageUrl: "/design/concert-1.jpg",
   },
   {
     id: "2",
-    artist: "Neon Horizon",
-    venue: "The Observatory",
-    date: "Apr 2, 2026",
-    location: "Berlin, Germany",
+    artist: "Void of Silence",
+    venue: "The Knife",
+    date: "Hackney, London",
+    location: "London, UK",
     imageUrl: "/design/concert-2.jpg",
   },
   {
     id: "3",
-    artist: "Velvet Thunder",
-    venue: "Paradiso",
-    date: "Apr 10, 2026",
-    location: "Amsterdam, NL",
+    artist: "Solar Flare Live",
+    venue: "Arlo Parks",
+    date: "NYC",
+    location: "New York, USA",
     imageUrl: "/design/concert-3.jpg",
   },
   {
     id: "4",
-    artist: "Crystal Waves",
-    venue: "Le Trabendo",
-    date: "Apr 15, 2026",
-    location: "Paris, France",
+    artist: "Pulse Frequency",
+    venue: "ODESZA",
+    date: "Tokyo",
+    location: "Tokyo, Japan",
     imageUrl: "/design/concert-4.jpg",
   },
 ]
@@ -57,14 +57,24 @@ export function TrendingSection({ concerts = defaultConcerts }: TrendingSectionP
   return (
     <section className="py-12 md:py-16 bg-[var(--surface-container-lowest)]">
       <div className="container mx-auto px-6">
-        <div className="mb-8 md:mb-12">
-          <h2 className="font-headings text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] tracking-tight mb-3">
-            Trending Shows
-          </h2>
-          <p className="font-sans text-[var(--text-muted)] text-base md:text-lg leading-relaxed max-w-2xl">
-            Discover the hottest concerts everyone is talking about
-          </p>
-        </div>
+<div className="mb-8 md:mb-12">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="font-headings text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] tracking-tight mb-3">
+        TRENDING NOW
+      </h2>
+      <p className="font-sans text-[var(--text-muted)] text-base md:text-lg leading-relaxed max-w-2xl">
+        The most discussed shows on Electric Venue right now.
+      </p>
+    </div>
+    <Link href="/concerts/search" className="hidden md:flex items-center gap-2 text-[#BB86FC] hover:text-[#DAB9FF] transition-colors font-semibold">
+      <span>Explore All</span>
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </Link>
+  </div>
+</div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {concerts.map((concert) => (
